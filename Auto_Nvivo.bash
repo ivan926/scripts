@@ -1,3 +1,14 @@
+#!/bin/bash
+
+###############################################################################
+# Version 1.0
+# Ivan Arriola 3/22/23
+#
+#
+###############################################################################
+
+
+
 
 
 
@@ -20,10 +31,14 @@ if [ -a "NVivo.app" ]; then
    sudo rm -r -f /Applications/NVivo.app
     else
 
-    echo "Application was not opened" >> $logFile
+    echo "Application was not Found" >> $logFile
 
 fi
 
+#must go into directory that is not read only
+cd tmp
+
+echo "This is the current working directory" >> $logFile
 pwd >> $logFile
 
 
@@ -31,17 +46,17 @@ pwd >> $logFile
 # we must download the dmg file to current directory than mount dmg to volume folder
 curl -L -O $NVivoDMG
 #mounting dmg file
-hdiutil attach NVivo.dmg  -noBrowse
+echo "Mounting dmg image to volume" >> $logFile
+hdiutil attach NVivo.dmg -noBrowse
 
 
 echo "Moving application to /Applications/ " >> $logFile
 #moving application to /Application/
-sudo cp -R -p /Volumes/NVivo/NVivo.app /Applications/
+cp -R -p /Volumes/NVivo/NVivo.app /Applications/
 
 
 #detaching
 hdiutil detach /Volumes/NVivo
 
 echo "Detaching from Volume mount point" >> $logFile
-
 

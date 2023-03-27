@@ -10,9 +10,6 @@
 
 
 
-
-
-
 logFile="/Library/Logs/NVivo.log"
 urlLink="https://techcenter.qsrinternational.com/Content/nm14/nm14_standard_installation.htm#Install"
 
@@ -20,14 +17,14 @@ urlLink="https://techcenter.qsrinternational.com/Content/nm14/nm14_standard_inst
  NVivoDMG=$(curl -L $urlLink | awk '{FS="\""}  {for(i=1;i<NF;i++){ print $i} }' | grep .dmg)
 
 
-
+echo "------------->" >> $logFile
 #echo "Attempting to find application if opened" >> $logFile
 
 if [ -a "NVivo.app" ]; then
 
   sudo echo "Closing NVivo.app application" >> $logFile
     osascript -e 'quit app "NVivo.app"'
-    echo "Exist appy exists somewhere maybe in the application folder"
+    echo "Exist appy exists somewhere maybe in the application folder" >> $logFile
    sudo rm -r -f /Applications/NVivo.app
     else
 
@@ -36,6 +33,7 @@ if [ -a "NVivo.app" ]; then
 fi
 
 #must go into directory that is not read only
+echo "Going into directory that is not read only"
 cd tmp
 
 echo "This is the current working directory" >> $logFile
@@ -49,6 +47,8 @@ curl -L -O $NVivoDMG
 echo "Mounting dmg image to volume" >> $logFile
 hdiutil attach NVivo.dmg -noBrowse
 
+echo "Removing dmg file" >> $logFile
+rm NVivo.dmg
 
 echo "Moving application to /Applications/ " >> $logFile
 #moving application to /Application/

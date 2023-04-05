@@ -1,7 +1,11 @@
 #!/bin/bash     
 
 
-
+#The several statements below though they may seem uneccessary but in fact are
+#vital in allowing the execution time needed for the most important
+#commands to be applied, HDIUTIL detach for example looks like it needs time and a statment
+#before the detach, as trivial as it may seem. 
+#You are welcome to try to fix it if you deem it neccessary.
 
 UNAME="(uname -m)"
 INTEL_LINK="https://www.jetbrains.com/toolbox-app/download/download-thanks.html?platform=macM1"
@@ -30,32 +34,51 @@ URL=$(curl -L $INTEL_LINK | awk '{FS="\""}   { for(i=1;i<NF;i++){ print $i} } ' 
 open -j -g -u $URL
 
 #give the curl command enough time to download the dmg file from website
-sleep 2
+sleep 5
 
 #extract name of current DMG
 DMG=$(ls ~/Downloads/ | grep jet | head -n 1)
+echo $DMG
 
-sleep 4
+
+
+sleep 20
 
 
 cd ~/Downloads/
-ls ~/Downloads/
 
-
+xattr -d com.apple.quarantine $DMG
+#debug prints
 pwd
-sleep 6
+ls
+
+
+#needs more time 
+sleep 20
 hdiutil attach -noBrowse $DMG
 
 #must be within directory in order to copy to applications folder
-cd /Volumes/JetBrains Toolbox
+
+cd /Volumes/"JetBrains Toolbox"
+echo "Inside the volumes folder"
+ls
+sleep 5
 #copy to app folder
+echo "copying application to app folder"
+ls
 cp -R JetBrains\ Toolbox.app /Applications
 
 #sudo cp -r -p /Volumes/JetBrains\ Toolbox/JetBrains\ Toolbox.app/ /Applications/
+echo "attempting to remove dmg"
+ls ~/Downloads
+rm ~/Downloads/$DMG
+ls ~/Downloads
 
-rm $DMG
-
-shdiutil detach /Volumes/JetBrains\ Toolbox
+sleep 60
+cd /Volumes/
+ls
+hdiutil detach /Volumes/JetBrains\ Toolbox
+ls
 
 
 

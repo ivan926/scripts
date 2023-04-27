@@ -26,12 +26,30 @@ fi
 
 URL=$(curl -L $INTEL_LINK | awk '{FS="\""}   { for(i=1;i<NF;i++){ print $i} } ' | grep jetbrains | grep thanks | head -n 1)
 
+echo $URL
 
 # ${v::${#v}-4}
 #URL=$(echo $URL | awk '{print substr($0,1, length($0)-1)}')
 
 
 open -j -g -u $URL
+
+sleep 3
+# close all tabs that were just opened
+osascript -e 'tell application "firefox" to activate
+tell application "System Events" to keystroke "w" using command down'
+osascript -e 'tell application "Google Chrome"
+	delete (every tab of every window where its title contains "Thank you for downloading the Toolbox App!")
+end tell'
+
+osascript -e 'tell application "Safari"
+	delete (every tab of every window whose name = "Thank you for downloading the Toolbox App!")
+end tell'
+
+
+
+echo "Done trying to close all tabs that opened"
+
 
 #give the curl command enough time to download the dmg file from website
 sleep 5

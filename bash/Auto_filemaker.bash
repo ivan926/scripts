@@ -25,21 +25,26 @@ echo "Using curl to extract url to dmg file for file maker" >> $logfile
 dmgExecutable=$(curl -L $url | awk '{FS="\""} { for(i=1;i<NF;i++){ print $i}}' | grep .dmg | grep downloads | head -n 1 )
 
 
+echo $dmgExecutable
 
-echo $dmgExecutable >> $logfile
 
-
-echo "mounting the dmg to volume directory" >> $logfile
+echo "mounting the dmg to volume directory"
 #mount dmg, move app to Application folder and unmount dmg file
 hdiutil attach $dmgExecutable -noBrowse 
 
-echo "Copying filemaker .app to application folder with existing attributes (-p)" >> $logfile
-cp -R -p /Volumes/FileMaker\ Pro\ 19/"FileMaker Pro.app" /Applications/
+echo "Copying filemaker .app to application folder with existing attributes "
 
-echo "unmounting from volume directory" >> $logfile
-hdiutil detach /Volumes/FileMaker\ Pro\ 19/
+cd /Volumes
+fileMaker=$(ls | grep File)
+echo $fileMaker
 
-echo "app finished downloading " >> $logfile
+echo "/Volumes/$fileMaker/FileMaker\ Pro.app /Applications/"
+cp -R /Volumes/"$fileMaker"/FileMaker\ Pro.app /Applications/
+
+echo "unmounting from volume directory" 
+hdiutil detach /Volumes/"$fileMaker"
+
+echo "app finished downloading "
 
 # chmod -R 755 /Applications/FileMaker\ Pro.app
 # chown -R root:wheel /Applications/FileMaker\ Pro.app

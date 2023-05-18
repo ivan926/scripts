@@ -1,5 +1,10 @@
 
-
+############################################################
+#Version 20 is also deprecated and is being replaced with
+#automated version
+#currently only version 17 is specifically being used as
+#legacy JDK
+############################################################
 #find current openJDK version to identify and possibly remove
 
 #find the latest version of the app using web API

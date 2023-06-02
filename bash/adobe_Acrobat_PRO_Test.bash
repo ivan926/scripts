@@ -2,7 +2,7 @@
 #The script below is to get the base installer automatically 
 url="https://helpx.adobe.com/acrobat/kb/acrobat-dc-downloads.html"
 
-if [ -d "/Applications/Adobe Acrobat DC" ]
+if [ -d "/Applications/Adobe Acrobat DC" ] || [ -a "/Applications/Adobe Acrobat.app" ]
 then
 
     echo "File does indeed exist currently"
@@ -48,6 +48,7 @@ else
     echo "No Adobe application found installing new Adobe"
     cd /tmp && DMG=$(curl -L $url  | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep trials | grep dmg | sort | head -n 1)
 
+    mkdir /Applications/Adobe\ Acrobat\ DC
     #mount dmg to volume folder and install package using installer command and detach DMG file
     hdiutil attach $DMG && sudo installer -pkg /Volumes/Acrobat/Acrobat/Acrobat\ DC\ Installer.pkg -target /tmp && hdiutil detach /Volumes/Acrobat
 
@@ -87,8 +88,10 @@ year=$(date |  awk -F' ' '{print $6}')
 #gets all the past patches for adobe except windows only
 current_patch=$(curl -L https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/index.html | awk -F'><' '{for(i = 1; i < NF;i++){print $i}}' | grep update, | tail -n +2 | sed 's/span class="std std-ref">//g' | sed 's:</span::g' | head -n 1)
 echo $current_patch
-# if [ -z "$has_windows"] 
-# then
+has_windows=$(echo $currentPatch | grep Windows)
+if [ -z "$has_windows"] 
+then
+    echo "String did not contain windows, string = \"${has_windows}\""
     url=https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/
     path=$(curl -L https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/index.html | awk -F'"' '{for(i = 1; i < NF;i++){print $i}}' | grep continuous | tail -n +9 | head -n 1)
     url+=$path
@@ -103,8 +106,7 @@ echo $current_patch
     hdiutil detach /Volumes/AcrobatDCUpd2300120177
     
 
-# else
-#     echo "No download, latest patch is windows only"
-
-# fi
+else
+    echo "No download, latest patch is windows only"
+fi
 

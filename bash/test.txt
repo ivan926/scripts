@@ -1,0 +1,8 @@
+Applications
+Anki.app Version: 2.1.61 
+Kindle.app Version: 1.40.1 
+Falcon.app Version: 6.54 
+Google Chrome.app Version: 113.0.5672.126 
+Microsoft Outlook.app Version: 16.73 
+Visual Studio Code.app Version: 1.78.2 
+Adobe Acrobat.app Version: 23.001.20177 

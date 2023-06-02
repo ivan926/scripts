@@ -1,7 +1,7 @@
 
-#############################################################
-#DEPRECATED VERSION 8 NO LONGER BEING USED
-#############################################################
+################################################################
+#DEPRECATED VERSION 8 NO LONGER BEING USED #####################                   
+################################################################
 #find current openJDK version to identify and possibly remove
 
 #find the latest version of the app using web API

@@ -91,14 +91,3 @@ else
     ls /Library/Java/JavaVirtualMachines/ | grep "temurin-${JDK_NUM}"
    
 fi
-
-
-
-
-
-
-
-
-
-
-

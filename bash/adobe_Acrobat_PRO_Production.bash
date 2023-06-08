@@ -50,7 +50,7 @@ else
 
     mkdir /Applications/Adobe\ Acrobat\ DC
     #mount dmg to volume folder and install package using installer command and detach DMG file
-    hdiutil attach $DMG && sudo installer -pkg /Volumes/Acrobat/Acrobat/Acrobat\ DC\ Installer.pkg -target /tmp && hdiutil detach /Volumes/Acrobat
+    hdiutil attach -noBrowse $DMG && sudo installer -pkg /Volumes/Acrobat/Acrobat/Acrobat\ DC\ Installer.pkg -target /tmp && hdiutil detach /Volumes/Acrobat
 
     sudo cp -R -f /Applications/Adobe\ Acrobat\ DC/Adobe\ Acrobat.app /Applications/ 
     sudo rm -R -f /Applications/Adobe\ Acrobat\ DC

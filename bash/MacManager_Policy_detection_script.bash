@@ -23,13 +23,14 @@ done
 
 
 #this is where we get the version number of each application
+date >> /Users/iarriola/Downloads/error.txt
 for appName in "${app_list_Array[@]}"
 do
      var=$(mdls -name kMDItemVersion "/Applications/${appName}" | awk -F'"' '{for(i=0;i<NF;i++){print $i}}' | tail -n 1)
      #echo $var
      version_number+=("$var")
-     echo "app name is $appName ver = $var" | grep "could not find" >> "/Users/iarriola/Downloads/error.txt"
-     echo "app name is $appName ver = $var"
+     echo "app name is $appName = $var" | grep "could not find" >> "/Users/iarriola/Downloads/error.txt"
+     echo "app name is $appName = $var"
 
     #  sudo jamf policy -event $value -verbose
 done
@@ -37,33 +38,36 @@ done
 
 #this is where we initiate the policy using the jamf trigger
 #############################################################################################################
-# error_found=0
+error_found=0
 
-# for trigger in "${trigger_list[@]}"
-# do
-#     trigger_result=$(sudo jamf policy -event $trigger -verbose | awk '{print $2 $3}' | tail -n 1)
-#    if [ $trigger_result == "Policyerror"]
-#    then
+for trigger in "${trigger_list[@]}"
+do
+    trigger_result=$(sudo jamf policy -event $trigger -verbose | awk '{print $2 $3}' | tail -n 1)
+   if [ $trigger_result == "Policyerror" ]
+   then
 
-#         error_found=1
-#         date=$(date)
-#         printf "there is a policy error for app %s\n %s" $trigger $date >> "/Users/iarriola/Downloads/error.txt"
+        error_found=1
+        date=$(date)
+        printf "there is a policy error for app %s\n %s" $trigger $date >> "/Users/iarriola/Downloads/error.txt"
 
-#     else
-#         printf "policy for app %s was a success \n" $trigger 
+    else
+        printf "policy for app %s was a success \n" $trigger 
 
-#     fi
+    fi
   
   
 
-# done
+done
 
 
-# result=$([[ $error_found == 1 ]] && echo "Error has been found check logs" || echo "No error found")
 
-# echo $result
-# #resetting error found variable not sure if neccessary
-# error_found=0
+result=$([[ $error_found == 1 ]] && echo "Error has been found check logs" || echo "No error found")
+
+echo $result
+#resetting error found variable not sure if neccessary
+error_found=0
+
+echo "############################################## END OF REPORT" >> "/Users/iarriola/Downloads/error.txt"
 #############################################################################################################
 #i=0
 # #this is where we initiate the policy using the jamf trigger

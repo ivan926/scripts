@@ -16,32 +16,32 @@ DMGNAME="LatestCitrixWorkspace.dmg"
 #path for log
 LOGFILE="/Library/Logs/CitrixAutoInstallScript.log"
 # #download location (JAMF Waiting room)
-# DOWNLOADPATH="/Library/Application Support/JAMF/Waiting Room/"
-
 
 
 #Start of Auto Install Script
 
 #Use echo to write to logfile
-#/bin/echo "-- Citrix Auto Install Started --" >> ${LOGFILE}
+/bin/echo "-- Citrix Auto Install Started --" 
 
 #Get Download Link
 #/bin/echo "Checking $LATESTPORTAL for the newest version" >> ${LOGFILE}
+############################################################################################################################################################
 downloadURL=$(curl $LATESTPORTAL | awk -F"['\"]" '{ for (i = 1; i <= NF; i++) {print $i } }' | grep 'dmg' | grep 'CitrixWorkspaceApp' | grep '=' | head -n 1)
+#############################################################################################################################################################
 downloadURL="https:$downloadURL"
 echo $downloadURL
 #/bin/echo "Selected download link: $downloadURL" >> ${LOGFILE}
 
 #Download the newest citrix workspace dmg
-#/bin/echo "Downloading the latest version to $DOWNLOADPATH as $DMGNAME" >> ${LOGFILE}
-# /bin/echo $(/usr/bin/curl -s -o ${DOWNLOADPATH}/${DMGNAME} ${downloadURL}) >> ${LOGFILE}
-
-
+/bin/echo "Downloading the latest version to $DOWNLOADPATH as $DMGNAME"
+########################################################################
 cd /tmp && curl -L -o $DMGNAME $downloadURL
-
+########################################################################
 #Mount the dmg
 #/bin/echo "Mounting $DMGNAME" >> ${LOGFILE}
+########################################################################
 hdiutil attach -nobrowse $DMGNAME
+########################################################################
 
 #Find the DMG
 mountedDMG="$(find /Volumes -maxdepth 1 -name "*Citrix Workspace*")"
@@ -101,22 +101,27 @@ done
 #Install the newest version
 pkgFile=$(find ${mountedDMG} -maxdepth 1 -name "*Install*")
 echo "Running installer at: $pkgFile"
+########################################################################
 failed=$(sudo installer -pkg "$pkgFile" -target / | grep failed)
+
 
 if [ -z $failed ]
 then
     echo "Install was a success"
 else
-    uninstallPkgFile=$(find ${mountedDMG} -maxdepth 1 -name "*Uninstall*")
-    installer -pkg "$uninstallPkgFile" -target / 
+    echo "install failed, might need to use uninstaller and install again if the fail happens a couple of times."
+    # uninstallPkgFile=$(find ${mountedDMG} -maxdepth 1 -name "*Uninstall*")
+    # installer -pkg "$uninstallPkgFile" -target / 
 fi
+########################################################################
 
 #Unmount and delete the .dmg
 /bin/echo "Detaching and removing the .dmg from $DOWNLOADPATH"
-
+#########################################################################
 sleep 3 && hdiutil detach $mountedDMG
-rm -f /tmp/${DMGNAME}
 
+rm -f /tmp/${DMGNAME}
+#########################################################################
 #Finish
 /bin/echo "Installation Script Complete." 
 

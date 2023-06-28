@@ -36,6 +36,9 @@ rm -f /Library/Application\ Support/JAMF/Waiting\ Room/"${appName}-${CurrentVers
 
 rm -f /Library/Application\ Support/JAMF/Waiting\ Room/"${appName}-${CurrentVersion}-intel.dmg.cache.xml"
 
+#allow for some time to actually detach the wireshark mount
+sleep 5
+
 #detaching the volume used to mount our dmg
 hdiutil detach /Volumes/"${appName} ${CurrentVersion}"
 

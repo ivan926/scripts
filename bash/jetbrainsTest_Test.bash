@@ -15,16 +15,18 @@ fi
 
 
 
-if [ $architecture == "x86_64"]
+if [ $architecture == "x86_64" ];
 then
-	JSON_DMG_PATH=$(curl  -H "Accept: application/json" $JSON_URL |awk -F',' '{for(i=1;i<NF;i++){print $i}}' | grep mac | head -n 2 | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep http | grep -v arm64 )
-	mkdir /tmp/temp
-	cd /tmp/temp
-	curl -L -O $JSON_DMG_PATH
-	DMG=$(ls grep | jetbrains)
+	JSON_DMG_PATH=$(curl -H "Accept: application/json" $JSON_API_URL |awk -F',' '{for(i=1;i<NF;i++){print $i}}' | grep mac | head -n 2 | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep http | grep -v arm64 )
+	sudo mkdir /tmp/temp
+	sudo cd /tmp/temp
+	sudo curl -L -O $JSON_DMG_PATH
+
+	DMG=$(ls | grep jetbrains-toolbox)
+
 	#mount and copy application to applications folder
-	hdiutil attach $dmg
-	cp -R /Volumes/JetBrains\ Toolbox/JetBrains\ Toolbox.app /Applications
+	sudo hdiutil attach $DMG
+	sudo cp -R /Volumes/JetBrains\ Toolbox/JetBrains\ Toolbox.app /Applications
 	#remove folder and detach image from volume
 	sudo rm -R /tmp/temp
 	sudo hdiutil detach /Volumes/jetBrains\ Toolbox
@@ -32,14 +34,17 @@ then
 
 
 	else
-	JSON_ARM64_DMG_PATH=$(curl  -H "Accept: application/json" $JSON_URL |awk -F',' '{for(i=1;i<NF;i++){print $i}}' | grep mac | head -n 2 | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep http | grep arm64 )
-	mkdir /tmp/temp
-	cd /tmp/temp
-	curl -L -O $JSON_DMG_PATH
-	DMG=$(ls grep | jetbrains)
+	echo "in else"
+	JSON_ARM64_DMG_PATH=$(curl -H "Accept: application/json" $JSON_API_URL |awk -F',' '{for(i=1;i<NF;i++){print $i}}' | grep mac | head -n 2 | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep http | grep arm64 )
+	sudo mkdir /tmp/temp
+	sudo cd /tmp/temp
+	sudo curl -L -O $JSON_ARM64_DMG_PATH
+
+	DMG=$(ls | grep jetbrains-toolbox)
+
 	#mount and copy application to applications folder
-	hdiutil attach $dmg
-	cp -R /Volumes/JetBrains\ Toolbox/JetBrains\ Toolbox.app /Applications
+	sudo hdiutil attach $DMG
+	sudo cp -R /Volumes/JetBrains\ Toolbox/JetBrains\ Toolbox.app /Applications
 	#remove folder and detach image from volume
 	sudo rm -R /tmp/temp 
 	sudo hdiutil detach /Volumes/jetBrains\ Toolbox

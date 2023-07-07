@@ -67,7 +67,7 @@ echo $result
 #resetting error found variable not sure if neccessary
 error_found=0
 
-echo "############################################## END OF REPORT" >> "/Users/iarriola/Downloads/error.txt"
+echo "############################################## END OF REPORT" >> "/Users/iarriola/Downloads/error.txt \n\n"
 #############################################################################################################
 #i=0
 # #this is where we initiate the policy using the jamf trigger
@@ -107,5 +107,33 @@ done
 # done
 
 # #paste <(printf "App Name: %s \n" ${trigger_list[@]}) <(printf " \tVersion Number: %s\n" ${version_number[@]})
+
+
+#check to see if applications are in the location they should be
+
+IFS=$'\n'
+# reading from app list
+for line in $(cat $appList)
+do
+    app_list_Array+=("$line.app")
+    echo $line
+
+done
+
+
+for appName in "${app_list_Array[@]}"
+do
+
+
+        if [ ! -d "/Applications/${appName}" ]; then
+                prepend=$(date)
+
+                echo "Path not found for ${appName}" >> ~/Downloads/applications_not_found_list_${prepend}.txt
+
+        else
+                echo "Application found"
+        fi
+
+done
 
 

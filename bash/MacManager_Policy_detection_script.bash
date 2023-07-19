@@ -126,7 +126,20 @@ then
             user_name=$(whoami)
             echo $user_name
             sudo rm -Rf "/Users/$user_name/Library/Application Support/Box"
+        elif [ "$appName" == "Citrix Workspace" ];then
 
+            /Volumes/Citrix\ Workspace/Uninstall\ Citrix\ Workspace.app/Contents/MacOS/Uninstall\ Citrix\ Workspace --quiet
+            osascript -e " tell application "System Events"
+	        tell process "Uninstall Citrix Workspace"
+	    	    click button "Continue" of window "Uninstall Citrix Workspace"
+	        end tell
+            end tell"
+
+            osascript -e "tell application "System Events"
+	        tell process "Uninstall Citrix Workspace"
+		        click button "Quit" of window "Uninstall Citrix Workspace"
+	            end tell
+            end tell" 
 
         else
             sudo rm -Rf "/Applications/${appName}"

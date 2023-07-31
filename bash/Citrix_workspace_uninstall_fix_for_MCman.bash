@@ -107,18 +107,18 @@ then
 else
     echo "install failed, might need to use uninstaller and install again."
     /Volumes/Citrix\ Workspace/Uninstall\ Citrix\ Workspace.app/Contents/MacOS/Uninstall\ Citrix\ Workspace --quiet
-    osascript -e " tell application "System Events"
+    osascript -e ' tell application "System Events"
 	tell process "Uninstall Citrix Workspace"
 	    	click button "Continue" of window "Uninstall Citrix Workspace"
 	    end tell
     end tell
-    "
+    '
 
-    osascript -e "tell application "System Events"
+    osascript -e 'tell application "System Events"
 	tell process "Uninstall Citrix Workspace"
 		click button "Quit" of window "Uninstall Citrix Workspace"
 	    end tell
-    end tell" 
+    end tell' 
     #Currently as stated somewhere above, current uninstall does not work, need to use dmg to uninstall the application
 fi
 

@@ -36,36 +36,36 @@ done
 
 #send proper command line argument if you want to delete applications   "install" = install applications / "d" = delete applications
 if [ "$1" == "install" ];then
-    # echo "initaiting policy checker"
-    # #this is where we initiate the policy using the jamf trigger
-    # #############################################################################################################
-    # error_found=0
+    echo "initaiting policy checker"
+    #this is where we initiate the policy using the jamf trigger
+    #############################################################################################################
+    error_found=0
 
-    # for trigger in "${trigger_list[@]}"
-    # do
-    #             trigger_result=$(sudo jamf policy -event $trigger -verbose | awk '{print $2 $3}' | tail -n 1)
-    #     if [ $trigger_result == "Policyerror" ]
-    #     then
+    for trigger in "${trigger_list[@]}"
+    do
+                trigger_result=$(sudo jamf policy -event $trigger -verbose | awk '{print $2 $3}' | tail -n 1)
+        if [ $trigger_result == "Policyerror" ]
+        then
 
-    #         error_found=1
-    #         date=$(date)
-    #         printf "there is a policy error for app %s\n %s" $trigger $date >> "/Users/iarriola/Downloads/error.txt"
-    #     else
-    #         printf "policy for app %s was a success \n" $trigger 
+            error_found=1
+            date=$(date)
+            printf "there is a policy error for app %s\n %s" $trigger $date >> "/Users/iarriola/Downloads/error.txt"
+        else
+            printf "policy for app %s was a success \n" $trigger 
 
-    #     fi
+        fi
         
-    # done
+    done
 
 
 
-    # result=$([[ $error_found == 1 ]] && echo "Error has been found check logs" || echo "No error found")
+    result=$([[ $error_found == 1 ]] && echo "Error has been found check logs" || echo "No error found")
 
-    # echo $result
-    # #resetting error found variable not sure if neccessary
-    # error_found=0
+    echo $result
+    #resetting error found variable not sure if neccessary
+    error_found=0
 
-    # echo "############################################## END OF REPORT" >> "/Users/iarriola/Downloads/error.txt \n\n"
+    echo "############################################## END OF REPORT" >> "/Users/iarriola/Downloads/error.txt \n\n"
     #############################################################################################################
     # this is where we try to find the location of the applications.
 
@@ -106,14 +106,13 @@ if [ "$1" == "install" ];then
 fi
 
 
-if [ $1 == "d" ]
+if [ "$1" == "d" ]
 then
 
     echo "Begining process to delete applications"
     for appName in "${app_list_delete_Array[@]}"
     do    
 
- 
         if [ "$appName" == "EndNote 20.app" ];then
             sudo rm -Rf "/Applications/EndNote 20"
 
@@ -126,22 +125,43 @@ then
             user_name=$(whoami)
             echo $user_name
             sudo rm -Rf "/Users/$user_name/Library/Application Support/Box"
-        elif [ "$appName" == "Citrix Workspace" ];then
+        elif [ "$appName" == "Citrix Workspace.app" ];then
 
-            /Volumes/Citrix\ Workspace/Uninstall\ Citrix\ Workspace.app/Contents/MacOS/Uninstall\ Citrix\ Workspace --quiet
-            osascript -e " tell application "System Events"
-	        tell process "Uninstall Citrix Workspace"
-	    	    click button "Continue" of window "Uninstall Citrix Workspace"
-	        end tell
-            end tell"
+            echo "Inside citrix workspace"
 
-            osascript -e "tell application "System Events"
+            echo "closing citrix work station"
+            citrix_workspace_process_id=$(ps -ax | grep "Citrix Workspace LaunchStatusMenuFromHelper" | head -n 1 | awk '{print $1}')
+            echo $citrix_workspace_process_id
+            sudo kill $citrix_workspace_process_id 
+
+            echo "running uninstall executable"
+
+    
+            sudo open -gj /Volumes/Citrix\ Workspace/Uninstall\ Citrix\ Workspace.app/Contents/MacOS/Uninstall\ Citrix\ Workspace
+
+            echo "Uninstall citrix work station osascript running now"
+            sleep 5
+                sudo osascript -e '
+            tell application "System Events"
+                    tell process "Uninstall Citrix Workspace" 
+                        click button "Continue" of window "Uninstall Citrix Workspace"
+                    end tell
+            end tell'
+            sleep 3
+            osascript -e '
+        tell application "System Events"
 	        tell process "Uninstall Citrix Workspace"
 		        click button "Quit" of window "Uninstall Citrix Workspace"
-	            end tell
-            end tell" 
+	        end tell
+        end tell'
+
+
+        
+
 
         else
+
+            echo "Removing the app $appName"
             sudo rm -Rf "/Applications/${appName}"
         fi
 

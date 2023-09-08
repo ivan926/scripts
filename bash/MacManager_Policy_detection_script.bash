@@ -12,13 +12,13 @@
 
 
 #read list of triggers and input into an array
-triggerList="/Users/iarriola/Documents/MACManager_files/test_trigger.txt"
-appList="/Users/iarriola/Documents/MACManager_files/testApplist.txt"
-appListToDelete="/Users/iarriola/Documents/MACManager_files/test_app_to_delete.txt"
+triggerList="/Users/iarriola/Documents/MACManager_files/trigger.txt"
+appList="/Users/iarriola/Documents/MACManager_files/Applist.txt"
+appListToDelete="/Users/iarriola/Documents/MACManager_files/app_to_delete.txt"
 
 #Teams card URL's
 teamsTestingChannelURl="https://byu.webhook.office.com/webhookb2/6a657e98-5590-47ae-8c82-b2430447d22f@c6fc6e9b-51fb-48a8-b779-9ee564b40413/IncomingWebhook/d7cc4cb9e5e248a4bbdc8beac4d70d35/d80d9b1a-9a9b-4063-98b3-47b282e0ddf4"
-
+teamsProductionChannelURL="https://byu.webhook.office.com/webhookb2/6a657e98-5590-47ae-8c82-b2430447d22f@c6fc6e9b-51fb-48a8-b779-9ee564b40413/IncomingWebhook/86e81dfdbb9a4152a2f009789aa15924/d80d9b1a-9a9b-4063-98b3-47b282e0ddf4"
 
 
 #this variable will hold potential error Teams card output
@@ -111,7 +111,7 @@ if [ "$1" == "install" ];then
                    #prepend=$(date)
 
                     echo "Path not found for ${appName}" >> /Users/iarriola/Documents/MACManager_files/Log_files/applications_not_found_list.txt
-                    LINE_ERROR+="Path not found for ${appName}"
+                    LINE_ERROR+="Path not found for ${appName} "
             
             else
                     echo "Application found"
@@ -181,7 +181,7 @@ if [ "$1" == "install" ];then
         }
         ')
 
-        curl -H 'Content-Type: application/json' -d "${cardJsonString}" $teamsTestingChannelURl
+        curl -H 'Content-Type: application/json' -d "${cardJsonString}" $teamsProductionChannelURL
 
     fi
 

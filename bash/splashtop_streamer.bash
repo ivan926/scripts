@@ -154,7 +154,7 @@ REQUEST_PERMISSION=""
 INIT_SECURITY_CODE=""
 SECURITY_OPTION=""
 LOOPBACK_ONLY="0"
-INSTALL_DRIVER="1"
+INSTALL_DRIVER="1" 
 HIDE_TRAY_ICON="0"
 DEFAULT_CLIENT_NAME=""
 
@@ -168,9 +168,7 @@ SHOW_DEPLOY_WARNING="0"
 
 SHOW_STREAMER_UI="0"
 
-INSTALL_DRIVER="0"
-
-
+#INSTALL_DRIVER="0"
 
 
 if [ "$CHECK_NEED_DMG_IN" == "0" ]; then
@@ -189,10 +187,12 @@ fi
 echo "Inject settings"
 mkdir /Users/Shared/SplashtopStreamer
 
+echo "The no_driver flag = $INSTALL_DRIVER"
+
 if [ "$INSTALL_DRIVER" == "0" ]; then
 NO_DRIVER="/Users/Shared/SplashtopStreamer/.NoDriver"
 touch "$NO_DRIVER"
-echo "Creating no Driver"
+echo "No driver being created"
 fi
 
 PRE_INSTALL="/Users/Shared/SplashtopStreamer/.PreInstall"
@@ -323,27 +323,39 @@ echo "</plist>"                                                >> "$PRE_INSTALL"
 
 #mount dmg
 echo "Mounting dmg file"
-hdiutil attach -nobrowse /Library/Application\ Support/JAMF/Waiting\ Room/$DMG_IN
+#download latest DMG from website?
+cd /tmp 
+curl -L -o splashtop.dmg https://my.splashtop.com/srs/mac 
+hdiutil attach -nobrowse /tmp/splashtop.dmg
+
+#make sure hidden uninstaller is removed if there is an older version or existing
+if [ -d "/tmp/.uninstall_splashtop" ]; then
+    rm -Rf "/tmp/.uninstall_splashtop"
+    cp -Rf "/Volumes/SplashtopStreamer/Uninstall Splashtop Streamer.app" "/tmp/.uninstall_splashtop"
+else
+     cp -Rf "/Volumes/SplashtopStreamer/Uninstall Splashtop Streamer.app" "/tmp/.uninstall_splashtop"
+fi
+
 
 echo "Install silently"
 NORMAL_INSTALLER="/Volumes/SplashtopStreamer/Splashtop Streamer.pkg"
 HIDDEN_INSTALLER="/Volumes/SplashtopStreamer/.Splashtop Streamer.pkg"
 if [ -f "$NORMAL_INSTALLER" ]; then
-installer -pkg -v 0 "$NORMAL_INSTALLER" -target /
+   installer -pkg "$NORMAL_INSTALLER" -target /
 else
-installer -pkg -v 0 "$HIDDEN_INSTALLER" -target /
+   installer -pkg "$HIDDEN_INSTALLER" -target /
 fi
 
 echo "Unmount dmg"
 hdiutil detach /Volumes/SplashtopStreamer
 
-#echo "Launch Streamer"
-#open "/Applications/Splashtop Streamer.app"
+#move uninstall application within the splashstreamers content folder
+#cp -Rf "/tmp/Uninstall Splashtop Streamer.app/" "/Applications/Splashtop Streamer.app/Contents"
 
 echo "Done!"
 
 #rm ./Splashtop_Streamer_Mac_DEPLOY_INSTALLER.dmg
-rm /Library/Application\ Support/JAMF/Waiting\ Room/$DMG_IN
+rm /tmp/splashtop.dmg
 
 killall -zv Installer #This line is to eliminate the threads left by the installer as zombies. 
 

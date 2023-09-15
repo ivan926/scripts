@@ -37,10 +37,11 @@ RStudio
 RingCentral
 RoyalTSX-auto
 SplashtopBusiness
+SplashtopStreamer
 Tableau
 VLC
 Via
-VisualStudioCode
+#VisualStudioCode
 Wireshark
 Zoom
 endnote20
@@ -61,6 +62,8 @@ Wireshark
 Firefox
 MySQLWorkbench
 FileMaker Pro
+Splashtop Streamer
+Splashtop Business
 NVivo
 iTerm
 GlobalProtect
@@ -161,20 +164,95 @@ done
 
     echo "############################################## END OF REPORT" >> "/Users/iarriola/Downloads/error.txt"
     #############################################################################################################
-    # this is where we try to find the location of the applications.
+    # Detection methods below 
 
     printf "Begining to check for file path..\n"
+    currentUser=$(whoami)
 
     for appName in "${app_list_Array[@]}"
-    do
+    do      
+            #Make sure Box edit is installed on endpoints
+            if [ $appName == "Box Edit.app" ];then
+                if [ ! -d "/Users/$currentUser/Library/Application Support/Box/Box Edit/Box Edit.app"  ];then
+                    LINE_ERROR+="Box edit component missing, Path not found for ${appName} "
+                else
+                    echo "Box edit app found"
+                    #check to see if mdls works on box components
+                     var=$(mdls -name kMDItemVersion "/Users/${currentUser}/Library/Application Support/Box/Box Edit/Box Edit.app" | awk -F'"' '{for(i=0;i<NF;i++){print $i}}' | tail -n 1)
+                     version_number+=("$var")
+                     echo "This is the Box edit application, version number = $var"
+                fi
+
+                if [ ! -d "/Users/$currentUser/Library/Application Support/Box/Box Edit/Box Local Com Server.app"  ];then
+                    LINE_ERROR+="Box edit component missing, Path not found for local Com Server.app "
+                else
+                    echo "Local Com Server app found"
+                     #check to see if mdls works on box components
+                     var=$(mdls -name kMDItemVersion "/Users/${currentUser}/Library/Application Support/Box/Box Edit/Box Local Com Server.app" | awk -F'"' '{for(i=0;i<NF;i++){print $i}}' | tail -n 1)
+                     version_number+=("$var")
+                     echo "Component of Box edit is Local Com server, version = $var"
+                fi
+
+            elif [ $appName == "Git.app" ];then
+                git_version=$(git version)
+
+                if [ -z "$git_version" ];then
+                    LINE_ERROR+="Git not found on computer "
+                else
+                    echo "Git version control found"
+                    version_number+=$(git version)
+
+                fi
+            elif [ $appName == "Microsoft 365.app" ];then
+
+                #creating a list of ms applications
+                echo "Microsoft Defender.app
+                    Microsoft Edge.app
+                    Microsoft Excel.app
+                    Microsoft OneNote.app
+                    Microsoft Outlook.app
+                    Microsoft PowerPoint.app
+                    Microsoft Teams.app
+                    Microsoft Word.app" > /tmp/ms_list.txt
+
+                #iterating through ms list and adding apps to an array
+                for app in $(cat "/tmp/ms_list.txt")
+                do
+                
+                    array+=("$app")
+                done
+
+                #detection method for individual ms apps begins
+                for ms_app in "${array[@]}"
+                do
+            
+                    if [ ! -d "/Applications/$ms_app" ];then
+                        echo "$ms_app not found from office 365"
+
+                        echo "Path not found for ${appName}" >> /Users/${currentUser}/Documents/MACManager_files/Log_files/applications_not_found_list.txt
+                        LINE_ERROR+="Office 365 app ${appName} not found in 365 suite "
+                    else
+                        echo "Application found"
+                        var=$(mdls -name kMDItemVersion "/Applications/${ms_app}" | awk -F'"' '{for(i=0;i<NF;i++){print $i}}' | tail -n 1)
+                        version_number+=("$var")
+                        echo "app name is $ms_app = $var"
+
+                    fi
 
 
-            if [ ! -d "/Applications/${appName}" ]; then
+
+                done
+
+
+                
+
+            elif [ ! -d "/Applications/${appName}" ]; then
                    #prepend=$(date)
 
-                    echo "Path not found for ${appName}" >> /Users/iarriola/Documents/MACManager_files/Log_files/applications_not_found_list.txt
+                    echo "Path not found for ${appName}" >> /Users/${currentUser}/Documents/MACManager_files/Log_files/applications_not_found_list.txt
                     LINE_ERROR+="Path not found for ${appName} "
             
+
             else
                     echo "Application found"
                      var=$(mdls -name kMDItemVersion "/Applications/${appName}" | awk -F'"' '{for(i=0;i<NF;i++){print $i}}' | tail -n 1)
@@ -246,6 +324,11 @@ done
         curl -H 'Content-Type: application/json' -d "${cardJsonString}" $teamsProductionChannelURL
 
     fi
+
+    #remove the files with the lists
+    rm $triggerList
+    rm $appList
+    rm "/tmp/ms_list.txt"
 
     #alert for the user.
 

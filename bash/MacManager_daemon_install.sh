@@ -98,7 +98,8 @@ POLICYERROR=""
 LINE_ERROR=""
 
 
-
+#current user variable to use for outputting path
+currentUser=$(whoami)
 
 # use curl below to send post data to teams card.
 # on macOS or Linux
@@ -140,7 +141,7 @@ done
 
             error_found=1
             date=$(date)
-           printf "there is a policy error for app %s\n %s" $trigger $date >> "/Users/iarriola/Documents/MACManager_files/Log_files/error.txt"
+           printf "there is a policy error for app %s\n %s" $trigger $date >> "/Users/${currentUser}/Documents/MACManager_files/Log_files/error.txt"
            POLICYERROR+="there is a policy error for app $trigger $date "
         
            
@@ -167,7 +168,7 @@ done
     # Detection methods below 
 
     printf "Begining to check for file path..\n"
-    currentUser=$(whoami)
+  
 
     for appName in "${app_list_Array[@]}"
     do      
@@ -321,7 +322,7 @@ done
         }
         ')
 
-        curl -H 'Content-Type: application/json' -d "${cardJsonString}" $teamsProductionChannelURL
+        curl -H 'Content-Type: application/json' -d "${cardJsonString}" $teamsTestingChannelURl
 
     fi
 

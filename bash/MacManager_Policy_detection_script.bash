@@ -99,7 +99,7 @@ if [ "$1" == "install" ];then
 
     echo "############################################## END OF REPORT" >> "/Users/iarriola/Downloads/error.txt"
     #############################################################################################################
-    # this is where we try to find the location of the applications.
+    # this is where the detection method begins
 
     printf "Begining to check for file path..\n"
 
@@ -206,12 +206,21 @@ then
         elif [ "$appName" == "Adobe Acrobat DC.app" ];then
             echo "in the adobe sphere"
             sudo rm -Rf "/Applications/Adobe Acrobat DC"
+            if [ -d "Adobe Creative Cloud" ];then
+                sudo rm -Rf "/Applications/Adobe Creative Cloud"
+             
         elif [ "$appName" == "Box.app" ];then
             echo "in the Box block"
             sudo rm -Rf "/Applications/Box.app"
             user_name=$(whoami)
             echo $user_name
             sudo rm -Rf "/Users/$user_name/Library/Application Support/Box"
+        elif [ "$appName" == "Splashtop Streamer.app" ];then
+            cd /tmp/.uninstall_splashtop/Contents/Resources/
+            ./"Uninstall Splashtop Streamer.sh"
+            sleep 5
+            sudo rm -Rf /tmp/.uninstall_splashtop/
+            echo "Splashtop streamer has been removed!"
 
         # Probably cannot use the script below because we cannot uninstall citrix automatically
 

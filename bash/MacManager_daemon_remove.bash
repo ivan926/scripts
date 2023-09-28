@@ -3,6 +3,8 @@
 
  appListToDelete="/Users/iarriola/Documents/MACManager_files/app_to_delete.txt"
 
+ touch /tmp/the_process_begins.txt
+
  # reading from app list to delete
 for line in $(cat $appListToDelete)
 do
@@ -12,21 +14,23 @@ do
 done
  
  echo "Begining process to delete applications"
+   
+
     for appName in "${app_list_delete_Array[@]}"
     do    
 
         if [ "$appName" == "EndNote 20.app" ];then
-            sudo rm -Rf "/Applications/EndNote 20"
+             rm -Rf "/Applications/EndNote 20"
 
         elif [ "$appName" == "Adobe Acrobat DC.app" ];then
             echo "in the adobe sphere"
-            sudo rm -Rf "/Applications/Adobe Acrobat DC"
+             rm -Rf "/Applications/Adobe Acrobat DC"
         elif [ "$appName" == "Box.app" ];then
             echo "in the Box block"
-            sudo rm -Rf "/Applications/Box.app"
+             rm -Rf "/Applications/Box.app"
             user_name=$(whoami)
             echo $user_name
-            sudo rm -Rf "/Users/$user_name/Library/Application Support/Box"
+             rm -Rf "/Users/$user_name/Library/Application Support/Box"
 
         Probably cannot use the script below because we cannot uninstall citrix automatically
 
@@ -69,16 +73,16 @@ done
             echo "closing citrix work station"
             citrix_workspace_process_id=$(ps -ax | grep "Citrix Workspace LaunchStatusMenuFromHelper" | head -n 1 | awk '{print $1}')
             echo $citrix_workspace_process_id
-            sudo kill $citrix_workspace_process_id 
+             kill $citrix_workspace_process_id 
 
             echo "running uninstall executable"
 
     
-            sudo open -gj /Volumes/Citrix\ Workspace/Uninstall\ Citrix\ Workspace.app/Contents/MacOS/Uninstall\ Citrix\ Workspace
+             open -gj /Volumes/Citrix\ Workspace/Uninstall\ Citrix\ Workspace.app/Contents/MacOS/Uninstall\ Citrix\ Workspace
 
             echo "Uninstall citrix work station osascript running now"
             sleep 5
-                sudo osascript -e '
+                 osascript -e '
             tell application "System Events"
                     tell process "Uninstall Citrix Workspace" 
                         click button "Continue" of window "Uninstall Citrix Workspace"
@@ -109,7 +113,7 @@ done
         else
 
             echo "Removing the app $appName"
-            sudo rm -Rf "/Applications/${appName}"
+             rm -Rf "/Applications/${appName}"
         fi
 
     done

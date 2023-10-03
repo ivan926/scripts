@@ -40,6 +40,7 @@ SplashtopBusiness
 SplashtopStreamer
 Tableau
 VLC
+VMWareFusion
 Via
 #VisualStudioCode
 Wireshark
@@ -78,6 +79,7 @@ balenaEtcher
 Python 3.11/IDLE
 JetBrains Toolbox
 VIA
+VMware Fusion
 Docker
 Postman
 R

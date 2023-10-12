@@ -23,8 +23,8 @@
 #find current openJDK version to identify and possibly remove
 
 #find the latest version of the app using web API
-currentJDK_Version=$(curl -X 'GET' 'https://api.adoptium.net//v3/info/available_releases' | python3 -c "import sys, json; print(json.load(sys.stdin)['most_recent_feature_version'])")
-
+currentJDK_Version=$(curl -X 'GET' 'https://api.adoptium.net//v3/info/available_releases' | python3 -c "import sys, json; print(json.load(sys.stdin)['available_lts_releases'])")  
+currentJDK_Version=$(echo $currentJDK_Version | sed 's:[][]::g' | tail -c3)
 
 #get users most current full name of JDK version
 JDK=$(ls /Library/Java/JavaVirtualMachines | grep "temurin-*" | sort -V | tail -n 1)
@@ -35,7 +35,7 @@ JDK_NUM=$(ls /Library/Java/JavaVirtualMachines | grep "temurin-*" | sort -V | ta
 if [ -a "/Library/Java/JavaVirtualMachines/${JDK}" ]; then
     echo "The latest version of JDK for current user is ${JDK_NUM}"
 else
-    echo "Does not exist at the current time"
+    echo "User does not have OpenJDK version on their computer"
 fi
 
 
@@ -60,13 +60,18 @@ then
     #creates URL link to direct pkg to download using curl for intel
     tempURL=$(curl -L $Repo_URL | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep mac | grep .pkg | grep x64 | head -n 1) && intel_pkg="github.com/${tempURL}"
     #Download package and install the package
-    cd /tmp && curl -L -O $intel_pkg && JDK_NAME=$(ls /tmp | grep OpenJDK) && sudo installer -pkg $JDK_NAME -target /tmp && rm -R /tmp/$JDK_NAME
+    cd /tmp && curl -L -O $intel_pkg 
+    JDK_NAME=$(ls /tmp | grep OpenJDK) 
+    sudo installer -pkg $JDK_NAME -target /tmp 
+    rm -R /tmp/$JDK_NAME
 else
     #creates URL link to direct pkg to download using curl for M1
     tempURL=$(curl -L $Repo_URL | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep mac | grep .pkg | grep aarch | head -n 1) && M1_pkg="github.com/${tempURL}"
     printf "This is a silicon chip"
     #Download package and install the package
-    cd /tmp && curl -L -O $M1_pkg && JDK_NAME=$(ls /tmp | grep OpenJDK) && sudo installer -pkg $JDK_NAME -target /tmp && rm -R /tmp/$JDK_NAME
+    cd /tmp && curl -L -O $M1_pkg 
+    JDK_NAME=$(ls /tmp | grep OpenJDK) && sudo installer -pkg $JDK_NAME -target /tmp
+    rm -R /tmp/$JDK_NAME
 fi
 
 #debug
@@ -85,7 +90,8 @@ JDK_NUM=$(ls /Library/Java/JavaVirtualMachines | grep "temurin-*" | sort -V | ta
 
 if [ $VERIFY_JDK_NUM -ne $currentJDK_Version ]; then
 
-    printf "Install not sucessfull \nLatest version is still " && ls /Library/Java/JavaVirtualMachines/ | sort | tail -n 1 
+    printf "Install not sucessfull \nLatest version is still " 
+    ls /Library/Java/JavaVirtualMachines/ | sort -V | tail -n 1 
 else
     printf "Install was successful to version ${JDK_NUM}\n"
     ls /Library/Java/JavaVirtualMachines/ | grep "temurin-${JDK_NUM}"

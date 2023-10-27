@@ -125,3 +125,6 @@ if ($output -ne "true") { #if Microsoft Visual C++ 2015 is not installed, the pa
 }
 
 Start-Process "msiexec.exe" -ArgumentList "/qn /i $downloadPath" -Wait -NoNewWindow
+
+#remove installer in temp folder
+remove-item $downloadPath

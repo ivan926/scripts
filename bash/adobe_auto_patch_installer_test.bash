@@ -30,7 +30,7 @@ latest_patch=$(curl -L https://www.adobe.com/devnet-docs/acrobatetk/tools/Releas
 echo $latest_patch
 has_windows=$(echo $latest_patch | grep Windows)
 
-if [ -z "$has_windows"] 
+if [ -z "$has_windows" ] 
 then
       echo "String did not contain windows, string = \"${has_windows}\""
     url=https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/

@@ -60,7 +60,8 @@ then
     #creates URL link to direct pkg to download using curl for intel
     tempURL=$(curl -L $Repo_URL | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep mac | grep .pkg | grep x64 | head -n 1) && intel_pkg="github.com/${tempURL}"
     #Download package and install the package
-    cd /tmp && curl -L -O $intel_pkg 
+    cd /tmp c
+    curl -L -O $intel_pkg 
     JDK_NAME=$(ls /tmp | grep OpenJDK) 
     sudo installer -pkg $JDK_NAME -target /tmp 
     rm -R /tmp/$JDK_NAME
@@ -69,8 +70,10 @@ else
     tempURL=$(curl -L $Repo_URL | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep mac | grep .pkg | grep aarch | head -n 1) && M1_pkg="github.com/${tempURL}"
     printf "This is a silicon chip"
     #Download package and install the package
-    cd /tmp && curl -L -O $M1_pkg 
-    JDK_NAME=$(ls /tmp | grep OpenJDK) && sudo installer -pkg $JDK_NAME -target /tmp
+    cd /tmp 
+    url -L -O $M1_pkg 
+    JDK_NAME=$(ls /tmp | grep OpenJDK) 
+    sudo installer -pkg $JDK_NAME -target /tmp
     rm -R /tmp/$JDK_NAME
 fi
 

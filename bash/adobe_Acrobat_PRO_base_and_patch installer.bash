@@ -59,7 +59,7 @@ latest_version_number=$(echo $current_patch | awk '{print $1}')
 
 echo "The latest current patch = $current_patch"
 has_windows=$(echo $currentPatch | grep Windows)
-if [ -z "$has_windows"] 
+if [ -z "$has_windows" ] 
 then
     echo "String did not contain windows, string = \"${has_windows}\""
     url=https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/

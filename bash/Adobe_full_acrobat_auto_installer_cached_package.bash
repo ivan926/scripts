@@ -1,14 +1,18 @@
-
 #!/bin/bash
 
 # checks to see if application is already installed on the computer and handles cached adobe package
 #####################################################################################################
 
+#change this whenever Matt Kiefer who is in charge of creating the adobe reader package changes it. 
+#change this to whatever the latest version that this application was downloading before a change was made
+#
+latest_package_version="23.006.20360"
+
+#####################################################################################################
+
 #get the names of the adobe zipped up package and cached XML
 adobe_package_zip=$(sudo ls /Library/Application\ Support/JAMF/Waiting\ Room | grep "Adobe Acrobat" | grep -v cache)
 adobe_package_cache_xml=$(sudo ls /Library/Application\ Support/JAMF/Waiting\ Room | grep "Adobe Acrobat" | tail -n 1)  
-
-
 
 
 if [ -a "/Applications/Adobe Acrobat DC/Adobe Acrobat.app/" ] || [ -a "/Applications/Adobe Acrobat.app/" ];
@@ -29,37 +33,39 @@ then
             echo "Current users current major version = $users_current_major_adobe_version"
         fi 
 
-        
+        #the following commented out code has been deprecated
+        #as the major version will not always increment when Matt Kiefer creates his package
         #getting the major version for our current package made by Matt Kiefer
-        casper_fs_package_version_num=$(echo $adobe_package_zip | awk '{print $4}' | awk -F'_' '{print $1}')
-        echo $casper_fs_package_version_num
+        #casper_fs_package_version_num=$(echo $adobe_package_zip | awk '{print $4}' | awk -F'_' '{print $1}')
+        #echo $casper_fs_package_version_num
 
-        if [ "$users_current_major_adobe_version" != "$casper_fs_package_version_num" ]
+        if [ "$users_current_major_adobe_version" -le ${latest_package_version} ]
         then
             echo "must remove current adobe and install new adobe package"            
-            echo "$users_current_major_adobe_version and $casper_fs_package_version_num"
+            echo "$users_current_major_adobe_version and $latest_package_version"
 
             if [ -a "/Applications/Adobe Acrobat DC/Adobe Acrobat.app/" ]
             then
-                sudo rm -Rf "/Applications/Adobe Acrobat DC"
+                rm -Rf "/Applications/Adobe Acrobat DC"
                 
             elif [ -a "/Applications/Adobe Acrobat.app" ] 
             then
-                sudo rm -Rf "/Applications/Adobe Acrobat DC" 
+                rm -Rf "/Applications/Adobe Acrobat DC" 
             fi 
 
             #install new package
             #make directory to unzip the adobe package
-            sudo mkdir /tmp/tmp
+            mkdir /tmp/tmp
             sleep 3
 
             #unzip the zip file from the waiting room to the temporary folder
             sudo unzip "/Library/Application Support/JAMF/Waiting Room/$adobe_package_zip" -d /tmp/tmp/
             echo $adobe_package_zip
-
+			
+            echo "removing caches from waiting room"
             #remove zip and cache from the waiting room
-            sudo rm "/Library/Application Support/JAMF/Waiting Room/$adobe_package_zip"
-            sudo rm "/Library/Application Support/JAMF/Waiting Room/$adobe_package_cache_xml"
+            rm "/Library/Application Support/JAMF/Waiting Room/$adobe_package_zip"
+            rm "/Library/Application Support/JAMF/Waiting Room/$adobe_package_cache_xml"
 
 
             #find name of package in the download subdirectory of JAMF folder after the package has been cached
@@ -70,9 +76,9 @@ then
             
             echo "downloading package"
         
-            sudo installer -package "/tmp/tmp/$adobe_package_full_path" -target /
-            sudo sleep 5
-            sudo rm -R -f /tmp/tmp
+            installer -package "/tmp/tmp/$adobe_package_full_path" -target /
+            sleep 5
+            rm -R -f /tmp/tmp
 
 
         else
@@ -89,12 +95,12 @@ else
         sleep 3
 
         #unzip the zip file from the waiting room to the temporary folder
-        sudo unzip "/Library/Application Support/JAMF/Waiting Room/$adobe_package_zip" -d /tmp/tmp/
+        unzip "/Library/Application Support/JAMF/Waiting Room/$adobe_package_zip" -d /tmp/tmp/
         echo $adobe_package_zip
 
         #remove zip and cache from the waiting room
-        sudo rm "/Library/Application Support/JAMF/Waiting Room/$adobe_package_zip"
-        sudo rm "/Library/Application Support/JAMF/Waiting Room/$adobe_package_cache_xml"
+        rm "/Library/Application Support/JAMF/Waiting Room/$adobe_package_zip"
+        rm "/Library/Application Support/JAMF/Waiting Room/$adobe_package_cache_xml"
 
 
         #find name of package in the download subdirectory of JAMF folder after the package has been cached
@@ -105,9 +111,9 @@ else
         
         echo "downloading package"
       
-        sudo installer -package "/tmp/tmp/$adobe_package_full_path" -target /
-        sudo sleep 5
-        sudo rm -R -f /tmp/tmp
+        installer -package "/tmp/tmp/$adobe_package_full_path" -target /
+        sleep 5
+        rm -R -f /tmp/tmp
 fi
 
 ##############################################################################################################
@@ -139,7 +145,7 @@ has_windows=$(echo $latest_patch | grep Windows)
 
 echo "checking to see if line has the word windows using control structure"
 
-if [ -z "$has_windows"] 
+if [ -z "$has_windows" ] 
 then
       echo "String did not contain windows, string = \"${has_windows}\"\n"
       echo "getting the correct full path to latest patch"

@@ -193,8 +193,7 @@ if [ "$1" == "install" ];then
 fi
 
 
-if [ "$1" == "d" ]
-then
+if [ "$1" == "delete" ];then
 
     echo "Begining process to delete applications"
     for appName in "${app_list_delete_Array[@]}"
@@ -208,6 +207,7 @@ then
             sudo rm -Rf "/Applications/Adobe Acrobat DC"
             if [ -d "Adobe Creative Cloud" ];then
                 sudo rm -Rf "/Applications/Adobe Creative Cloud"
+            fi
              
         elif [ "$appName" == "Box.app" ];then
             echo "in the Box block"
@@ -295,9 +295,6 @@ then
 
         #     rm -f /tmp/${DMGNAME}
         #     #########################################################################
-
-
-        
 
 
         else

@@ -24,12 +24,12 @@ GlobalProtectCampus
 GlobalProtectDatacenter
 GoogleChrome
 JetBrainsToolbox
-LastPass
 MicrosoftOffice365
 #MicrosoftTeams
 MozillaFirefox
 MySQLWorkbench
-Nvivo
+NVivo
+Cyberduck
 PostmanAuto
 Python
 RStatistics
@@ -53,8 +53,8 @@ microsoftedge" > /tmp/trigger.txt
 #create list of applications
 echo "EndNote 20/EndNote 20
 Adobe Acrobat DC/Adobe Acrobat
+Cyberduck
 Visual Studio Code
-LastPass
 RingCentral
 RStudio
 Royal TSX
@@ -70,7 +70,8 @@ iTerm
 GlobalProtect
 GlobalProtect
 Citrix Workspace
-Tableau Desktop 2023.2
+Tableau Desktop 2023.1
+Tableau Desktop 2023.3
 zoom.us
 BBEdit
 VLC
@@ -99,6 +100,7 @@ teamsProductionChannelURL="https://byu.webhook.office.com/webhookb2/6a657e98-559
 POLICYERROR=""
 LINE_ERROR=""
 
+error_found=0
 
 #current user variable to use for outputting path
 currentUser=$(whoami)
@@ -121,34 +123,30 @@ done
 for line in $(cat $appList)
 do
     app_list_Array+=("$line.app")
-    echo $line
+    echo "$line.app"
    
 done
 
 
-
-
-#send proper command line argument if you want to delete applications   "install" = install applications / "d" = delete applications
-
     echo "initaiting policy checker"
     #this is where we initiate the policy using the jamf trigger
     #############################################################################################################
-    error_found=0
+
 
     for trigger in "${trigger_list[@]}"
     do
-                trigger_result=$(/usr/local/bin/jamf policy -event $trigger -verbose | awk '{print $2 $3}' | tail -n 1)
-        if [ $trigger_result == "Policyerror" ]
+            #trigger_result=$(/usr/local/bin/jamf policy -event $trigger -verbose | awk '{print $2 $3}' | tail -n 1)
+        if [[ "$trigger_result" == "Policyerror" ]];
         then
 
             error_found=1
             date=$(date)
-           printf "there is a policy error for app %s\n %s" $trigger $date >> "/Users/${currentUser}/Documents/MACManager_files/Log_files/error.txt"
+            printf "there is a policy error for app %s\n %s" $trigger $date >> "/Users/${currentUser}/Documents/MACManager_files/Log_files/error.txt"
            POLICYERROR+="there is a policy error for app $trigger $date "
         
            
         else
-            printf "policy for app %s was a success \n" $trigger 
+            printf "No error for policy %s\n" $trigger 
 
         fi
         
@@ -215,7 +213,7 @@ done
                     Microsoft OneNote.app
                     Microsoft Outlook.app
                     Microsoft PowerPoint.app
-                    Microsoft Teams.app
+                    Microsoft Teams classic.app
                     Microsoft Word.app" > /tmp/ms_list.txt
 
                 #iterating through ms list and adding apps to an array
@@ -233,7 +231,7 @@ done
                         echo "$ms_app not found from office 365"
 
                         echo "Path not found for ${appName}" >> /Users/${currentUser}/Documents/MACManager_files/Log_files/applications_not_found_list.txt
-                        LINE_ERROR+="Office 365 app ${appName} not found in 365 suite "
+                        LINE_ERROR+="Office 365 app ${appName} not found in 365 suite \n"
                     else
                         echo "Application found"
                         var=$(mdls -name kMDItemVersion "/Applications/${ms_app}" | awk -F'"' '{for(i=0;i<NF;i++){print $i}}' | tail -n 1)
@@ -252,8 +250,9 @@ done
             elif [ ! -d "/Applications/${appName}" ]; then
                    #prepend=$(date)
 
-                    echo "Path not found for ${appName}" >> /Users/${currentUser}/Documents/MACManager_files/Log_files/applications_not_found_list.txt
-                    LINE_ERROR+="Path not found for ${appName} "
+                    # echo "Path not found for ${appName}" >> /Users/${currentUser}/Documents/MACManager_files/Log_files/applications_not_found_list.txt
+                      echo "Path not found for ${appName}"
+                    LINE_ERROR+="Path not found for ${appName}\n"
             
 
             else
@@ -328,7 +327,7 @@ done
 
     fi
 
-    #remove the files with the lists
+    #remove the files with the trigger and app list
     rm $triggerList
     rm $appList
     rm "/tmp/ms_list.txt"
@@ -337,7 +336,7 @@ done
 
     osascript -e 'tell application (path to frontmost application as text) to display dialog "Script has finished running" buttons {"OK"} with icon stop'
 
-#############################################################################################################
+###########################################################################################################################################################
   
 
 

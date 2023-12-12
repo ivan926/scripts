@@ -23,15 +23,18 @@
 ####################################################################################################
 #Installing dmg directly from the Internet
 #finding the latest major version
-mkdir /tmp/endnote
-cd /tmp/endnote
-majorVersionNumber=$(curl -L $url | awk -F'"' '{for(i=1;i<NR;i++){print $i}}' | grep "for macOS" | awk -F'><' '{print $1}' | sed 's/<[^>]*>//g; s/[^.0123456789]*//g' | awk -F'.' '{print $1}' )
+#mkdir /tmp/endnote
+#cd /tmp/endnote
+#majorVersionNumber=$(curl -L $url | awk -F'"' '{for(i=1;i<NR;i++){print $i}}' | grep "for macOS" | awk -F'><' '{print $1}' | sed 's/<[^>]*>//g; s/[^.0123456789]*//g' | awk -F'.' '{print $1}' )
 #
-dmg="https://download.endnote.com/downloads/$majorVersionNumber/EndNote${majorVersionNumber}Installer.dmg"
-#Downloading the dmg file from the internet
-curl -o /tmp/endnote/endnote${majorVersionNumber}
+majorVersionNumber=$(ls /Applications | grep EndNote | grep -v "Install" | tail -n 1 | awk '{print $2}')
+
+#Current site installer 
+#https://download.endnote.com/site/d3fbda5af8b811edbb6abcc95280ecd5/EndNote21SiteInstaller.dmg
+site_installer="https://download.endnote.com/site/d3fbda5af8b811edbb6abcc95280ecd5/EndNote21SiteInstaller.dmg"
+curl -O $site_installer
 #Mounting the DMG file
-hdiutul attach -noBrowse endnote${majorVersionNumber}
+hdiutul attach -noBrowse EndNote${majorVersionNumber}SiteInstaller.dmg
 
 
 # Script to download and install Endnote patches directly from the Internet
@@ -66,7 +69,7 @@ then # There is a patch
     /bin/echo "`date`: Downloading the latest patch - EndNote $versionNumber." >> ${logfile}
     versionWithoutPeriod=$(echo $versionNumber | sed 's/\.//g')
     zipfile="EndNote$versionWithoutPeriod""UpdateInstaller.zip"
-    downloadURL="http://download.endnote.com/updates/20.0/$zipfile" # IMPORTANT: This '19.0' directory may change with major updates
+    downloadURL="http://download.endnote.com/updates/21.0/$zipfile" # IMPORTANT: This '19.0' directory may change with major updates
     /usr/bin/curl -s -o /tmp/$zipfile $downloadURL
 
     # Unzip the compressed .app and move it to /Applications

@@ -1,9 +1,11 @@
- 
- #!/bin/bash
-
+#!/bin/bash
  appListToDelete="/Users/iarriola/Documents/MACManager_files/app_to_delete.txt"
 
- touch /tmp/the_process_begins.txt
+touch /tmp/the_process_begins.txt
+
+#making sure that when we use cat to get our list of applications
+#that we are getting the full line instead of breaking every space with a line
+IFS=$'\n'
 
  # reading from app list to delete
 for line in $(cat $appListToDelete)
@@ -32,7 +34,7 @@ done
             echo $user_name
              rm -Rf "/Users/$user_name/Library/Application Support/Box"
 
-        Probably cannot use the script below because we cannot uninstall citrix automatically
+        #Probably cannot use the script below because we cannot uninstall citrix automatically
 
         elif [ "$appName" == "Citrix Workspace.app" ];then
 
@@ -113,7 +115,7 @@ done
         else
 
             echo "Removing the app $appName"
-             rm -Rf "/Applications/${appName}"
+            sudo rm -Rf "/Applications/${appName}"
         fi
 
     done

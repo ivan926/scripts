@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # checks to see if application is already installed on the computer and handles cached adobe package

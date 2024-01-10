@@ -27,6 +27,9 @@ done
         elif [ "$appName" == "Adobe Acrobat DC.app" ];then
             echo "in the adobe sphere"
              rm -Rf "/Applications/Adobe Acrobat DC"
+             if [ -d  "/Applications/Adobe Creative Cloud" ];then
+                 rm -Rf "/Applications/Adobe Creative Cloud"
+             fi
         elif [ "$appName" == "Box.app" ];then
             echo "in the Box block"
              rm -Rf "/Applications/Box.app"

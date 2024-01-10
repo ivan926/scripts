@@ -75,12 +75,12 @@ Tableau Desktop 2023.3
 zoom.us
 BBEdit
 VLC
-Microsoft Teams
+Microsoft Teams classic
 balenaEtcher
 Python 3.11/IDLE
 JetBrains Toolbox
 VIA
-VMware Fusion
+#VMware Fusion
 Docker
 Postman
 R
@@ -128,21 +128,21 @@ do
 done
 
 
-    echo "initaiting policy checker"
+    echo "initiating policy checker"
     #this is where we initiate the policy using the jamf trigger
     #############################################################################################################
 
 
     for trigger in "${trigger_list[@]}"
     do
-            #trigger_result=$(/usr/local/bin/jamf policy -event $trigger -verbose | awk '{print $2 $3}' | tail -n 1)
+            trigger_result=$(/usr/local/bin/jamf policy -event $trigger -verbose | awk '{print $2 $3}' | tail -n 1)
         if [[ "$trigger_result" == "Policyerror" ]];
         then
 
             error_found=1
             date=$(date)
             printf "there is a policy error for app %s\n %s" $trigger $date >> "/Users/${currentUser}/Documents/MACManager_files/Log_files/error.txt"
-           POLICYERROR+="there is a policy error for app $trigger $date "
+            POLICYERROR+="there is a policy error for app $trigger $date "
         
            
         else

@@ -1,13 +1,15 @@
 #!/bin/bash
 
-##################################################
+######################################################################################################
 #
 #   Project: MACManager
 #   Author: Ivan Arriola (da-higgs)
 #   Supervisor: Jason Williams, End-User Engineering
 #   Date: 2023-08-03
 #
-##################################################
+#   Dependency: jq (if you do not have json parser use homebrew to install) command: (brew install jq)
+#   
+#######################################################################################################
 
 #create lists of triggers
 echo "AdobeAcrobatPro
@@ -337,7 +339,9 @@ done
     osascript -e 'tell application (path to frontmost application as text) to display dialog "Script has finished running" buttons {"OK"} with icon stop'
 
 ###########################################################################################################################################################
+
+
+#start the removal script
+
+/bin/bash /Users/ivan926/scripts/bash/MacManager_daemon_remove.bash
   
-
-
-

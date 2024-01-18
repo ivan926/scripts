@@ -129,8 +129,8 @@ do
    
 done
 
-    echo "\n\n" >> /var/log/MacManager_install.log
-    echo "initiating policy checker" >> /var/log/MacManager_install.log
+    printf "\n\n" >> /var/log/MacManager_install.log
+    printf "initiating policy checker" >> /var/log/MacManager_install.log
     #this is where we initiate the policy using the jamf trigger
     #############################################################################################################
 
@@ -153,11 +153,11 @@ done
         fi
         
     done
-    echo "\n\n" >> /var/log/MacManager_install.log
+    printf "\n\n" >> /var/log/MacManager_install.log
     #DEBUG statment delete
-    echo "Final string message to output for policy errors onto teams card = /n" >> /var/log/MacManager_install.log
-    echo $LINE_ERROR >> /var/log/MacManager_install.log
-    echo "\n\n" >> /var/log/MacManager_install.log
+    printf "Final string message to output for policy errors onto teams card = /n" >> /var/log/MacManager_install.log
+    printf $LINE_ERROR >> /var/log/MacManager_install.log
+    printf "\n\n" >> /var/log/MacManager_install.log
 
 
     result=$([[ $error_found == 1 ]] && echo "Error has been found check logs" || echo "No error found")
@@ -166,8 +166,8 @@ done
     #resetting error found variable not sure if neccessary
    
 
-    echo "############################################## END OF INSTALLATION" >> /var/log/MacManager_install.log
-    echo "\n\n" >> /var/log/MacManager_install.log
+    printf "############################################## END OF INSTALLATION" >> /var/log/MacManager_install.log
+    printf "\n\n" >> /var/log/MacManager_install.log
     #############################################################################################################
     # Detection methods below 
 
@@ -180,7 +180,7 @@ done
             if [ $appName == "Box Edit.app" ];then
                 if [ ! -d "/Users/$currentUser/Library/Application Support/Box/Box Edit/Box Edit.app"  ];then
                     LINE_ERROR+="Box edit component missing, Path not found for ${appName} "
-                    echo "Box edit component missing, Path not found for ${appName} " >> /var/log/MacManager_install.log
+                    printf "Box edit component missing, Path not found for ${appName} " >> /var/log/MacManager_install.log
                 else
                     echo "Box edit app found"
                     #check to see if mdls works on box components
@@ -192,7 +192,7 @@ done
 
                 if [ ! -d "/Users/$currentUser/Library/Application Support/Box/Box Edit/Box Local Com Server.app"  ];then
                     LINE_ERROR+="Box edit component missing, Path not found for local Com Server.app "
-                  echo "Box edit component missing, Path not found for local Com Server.app " >> /var/log/MacManager_install.log
+                  printf "Box edit component missing, Path not found for local Com Server.app " >> /var/log/MacManager_install.log
                 else
                     echo "Local Com Server app found"
                      #check to see if mdls works on box components
@@ -206,7 +206,7 @@ done
 
                 if [ -z "$git_version" ];then
                     LINE_ERROR+="Git not found on computer "
-                    echo "Git not found on computer " >> /var/log/MacManager_install.log
+                    printf "Git not found on computer " >> /var/log/MacManager_install.log
                 else
                     echo "Git version control found"
                     version_number+=$(git version)
@@ -236,7 +236,7 @@ done
                 do
             
                     if [ ! -d "/Applications/$ms_app" ];then
-                        echo "$ms_app not found from office 365" >> /var/log/MacManager_install.log
+                        printf "$ms_app not found from office 365" >> /var/log/MacManager_install.log
 
                         #echo "Path not found for ${appName}" >> /var/log/MacManager_install.log
                         LINE_ERROR+="Office 365 app ${appName} not found in 365 suite \n"
@@ -259,7 +259,7 @@ done
                    #prepend=$(date)
 
                     # echo "Path not found for ${appName}" >> /Users/${currentUser}/Documents/MACManager_files/Log_files/applications_not_found_list.txt
-                      echo "Path not found for ${appName}" >> /var/log/MacManager_install.log
+                      printf "Path not found for ${appName}" >> /var/log/MacManager_install.log
                     LINE_ERROR+="Path not found for ${appName}\n"
             
 
@@ -274,11 +274,11 @@ done
 
     #if there has been an error found use the webhook to send error message to teams card
     if [ $error_found -eq 1 ];then
-        echo "\n\n" >> /var/log/MacManager_install.log
-        echo "sending info via webhook to teams channel" >> /var/log/MacManager_install.log
+        printf "\n\n" >> /var/log/MacManager_install.log
+        printf "sending info via webhook to teams channel" >> /var/log/MacManager_install.log
 
-        echo "Content of policy error = $POLICYERROR" >> /var/log/MacManager_install.log
-        echo "Content of line error = $LINE_ERROR" >> /var/log/MacManager_install.log
+        printf "Content of policy error = $POLICYERROR" >> /var/log/MacManager_install.log
+        printf "Content of line error = $LINE_ERROR" >> /var/log/MacManager_install.log
 
 
          #JSON skeleton for teams message
@@ -345,7 +345,7 @@ done
 
     osascript -e 'tell application (path to frontmost application as text) to display dialog "Script has finished running" buttons {"OK"} with icon stop'
 
-    echo "############################################## END OF INSTALLATION SCRIPT" >> /var/log/MacManager_install.log
+    printf "############################################## END OF INSTALLATION SCRIPT" >> /var/log/MacManager_install.log
 
 ###########################################################################################################################################################
 

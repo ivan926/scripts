@@ -1,6 +1,6 @@
 #!/bin/bash
 
-######################################################################################################
+####################################################################################################
 #
 #   Project: MACManager
 #   Author: Ivan Arriola (da-higgs)
@@ -129,8 +129,8 @@ do
    
 done
 
-
-    echo "initiating policy checker"
+    echo "\n\n" >> /var/log/MacManager_install.log
+    echo "initiating policy checker" >> /var/log/MacManager_install.log
     #this is where we initiate the policy using the jamf trigger
     #############################################################################################################
 
@@ -143,8 +143,8 @@ done
 
             error_found=1
             date=$(date)
-            printf "there is a policy error for app %s\n %s" $trigger $date >> "/Users/${currentUser}/Documents/MACManager_files/Log_files/error.txt"
-            POLICYERROR+="there is a policy error for app $trigger $date "
+            printf "there is a policy error for app %s\n %s" $trigger $date >> /var/log/MacManager_install.log
+            POLICYERROR+="there is a policy error for app $trigger $date " 
         
            
         else
@@ -153,10 +153,11 @@ done
         fi
         
     done
-
+    echo "\n\n" >> /var/log/MacManager_install.log
     #DEBUG statment delete
-    echo "Final end product to output for policy errors onto teams card = /n"
-    echo $LINE_ERROR
+    echo "Final string message to output for policy errors onto teams card = /n" >> /var/log/MacManager_install.log
+    echo $LINE_ERROR >> /var/log/MacManager_install.log
+    echo "\n\n" >> /var/log/MacManager_install.log
 
 
     result=$([[ $error_found == 1 ]] && echo "Error has been found check logs" || echo "No error found")
@@ -165,11 +166,12 @@ done
     #resetting error found variable not sure if neccessary
    
 
-    echo "############################################## END OF REPORT" >> "/Users/iarriola/Downloads/error.txt"
+    echo "############################################## END OF INSTALLATION" >> /var/log/MacManager_install.log
+    echo "\n\n" >> /var/log/MacManager_install.log
     #############################################################################################################
     # Detection methods below 
 
-    printf "Begining to check for file path..\n"
+    printf "Begining to check for file path..\n" >> /var/log/MacManager_install.log
   
 
     for appName in "${app_list_Array[@]}"
@@ -178,16 +180,19 @@ done
             if [ $appName == "Box Edit.app" ];then
                 if [ ! -d "/Users/$currentUser/Library/Application Support/Box/Box Edit/Box Edit.app"  ];then
                     LINE_ERROR+="Box edit component missing, Path not found for ${appName} "
+                    echo "Box edit component missing, Path not found for ${appName} " >> /var/log/MacManager_install.log
                 else
                     echo "Box edit app found"
                     #check to see if mdls works on box components
                      var=$(mdls -name kMDItemVersion "/Users/${currentUser}/Library/Application Support/Box/Box Edit/Box Edit.app" | awk -F'"' '{for(i=0;i<NF;i++){print $i}}' | tail -n 1)
                      version_number+=("$var")
                      echo "This is the Box edit application, version number = $var"
+
                 fi
 
                 if [ ! -d "/Users/$currentUser/Library/Application Support/Box/Box Edit/Box Local Com Server.app"  ];then
                     LINE_ERROR+="Box edit component missing, Path not found for local Com Server.app "
+                  echo "Box edit component missing, Path not found for local Com Server.app " >> /var/log/MacManager_install.log
                 else
                     echo "Local Com Server app found"
                      #check to see if mdls works on box components
@@ -201,6 +206,7 @@ done
 
                 if [ -z "$git_version" ];then
                     LINE_ERROR+="Git not found on computer "
+                    echo "Git not found on computer " >> /var/log/MacManager_install.log
                 else
                     echo "Git version control found"
                     version_number+=$(git version)
@@ -230,9 +236,9 @@ done
                 do
             
                     if [ ! -d "/Applications/$ms_app" ];then
-                        echo "$ms_app not found from office 365"
+                        echo "$ms_app not found from office 365" >> /var/log/MacManager_install.log
 
-                        echo "Path not found for ${appName}" >> /Users/${currentUser}/Documents/MACManager_files/Log_files/applications_not_found_list.txt
+                        #echo "Path not found for ${appName}" >> /var/log/MacManager_install.log
                         LINE_ERROR+="Office 365 app ${appName} not found in 365 suite \n"
                     else
                         echo "Application found"
@@ -253,7 +259,7 @@ done
                    #prepend=$(date)
 
                     # echo "Path not found for ${appName}" >> /Users/${currentUser}/Documents/MACManager_files/Log_files/applications_not_found_list.txt
-                      echo "Path not found for ${appName}"
+                      echo "Path not found for ${appName}" >> /var/log/MacManager_install.log
                     LINE_ERROR+="Path not found for ${appName}\n"
             
 
@@ -268,10 +274,11 @@ done
 
     #if there has been an error found use the webhook to send error message to teams card
     if [ $error_found -eq 1 ];then
-        echo "sending info via webhook to teams channel"
+        echo "\n\n" >> /var/log/MacManager_install.log
+        echo "sending info via webhook to teams channel" >> /var/log/MacManager_install.log
 
-        echo "Content of policy error = $POLICYERROR"
-        echo "Content of line error = $LINE_ERROR"
+        echo "Content of policy error = $POLICYERROR" >> /var/log/MacManager_install.log
+        echo "Content of line error = $LINE_ERROR" >> /var/log/MacManager_install.log
 
 
          #JSON skeleton for teams message
@@ -337,6 +344,8 @@ done
     #alert for the user.
 
     osascript -e 'tell application (path to frontmost application as text) to display dialog "Script has finished running" buttons {"OK"} with icon stop'
+
+    echo "############################################## END OF INSTALLATION SCRIPT" >> /var/log/MacManager_install.log
 
 ###########################################################################################################################################################
 

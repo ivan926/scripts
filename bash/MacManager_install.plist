@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Label</key>
+        <string>MacManager.daemon.install</string>
+
+        <key>ServiceDescription</key>
+        <string>Plist that is used for testing</string>
+
+        <key>ProgramArguments</key>
+         <array>
+        <string>sudo</string>
+        <string>/Users/ivan926/scripts/bash/MacManager_daemon_install.sh</string>
+        </array>
+
+        <key>WorkingDirectory</key>
+        <string>/Users/ivan926</string>
+
+        <key>StandardErrorPath</key>
+        <string>/Users/ivan926/Desktop/reconciler-error.log</string>
+
+        <key>EnvironmentVariables</key>
+        <dict>
+            <key>PATH</key>
+            <string>
+                /usr/local/opt/gettext/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+            </string>
+        </dict>
+
+
+        <key>RunAtLoad</key>
+        <false />
+    </dict>
+</plist>

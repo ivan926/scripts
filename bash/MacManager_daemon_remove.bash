@@ -1,5 +1,5 @@
 #!/bin/bash
- appListToDelete="/Users/iarriola/Documents/MACManager_files/app_to_delete.txt"
+ appListToDelete="/Users/ivan926/Documents/MACManager_files/app_to_delete.txt"
 
 touch /tmp/the_process_begins.txt
 
@@ -101,7 +101,7 @@ done
                 end tell
             end tell'
 
-
+            hdiutil detach "Citrix Workspace"
 
              #Unmount and delete the .dmg
             /bin/echo "Detaching and removing the .dmg from $DOWNLOADPATH"

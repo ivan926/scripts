@@ -11,6 +11,10 @@
 #   
 #######################################################################################################
 
+
+#need to pull the latest version of python to ensure correct path to application
+python_version=$(ls /Applications/ | grep Python)
+
 #create lists of triggers
 echo "AdobeAcrobatPro
 Audacity
@@ -25,7 +29,7 @@ Git
 GlobalProtectCampus
 GlobalProtectDatacenter
 GoogleChrome
-JetBrainsToolbox
+JetBrainsToolboxTest
 MicrosoftOffice365
 #MicrosoftTeams
 MozillaFirefox
@@ -79,7 +83,7 @@ BBEdit
 VLC
 Microsoft Teams classic
 balenaEtcher
-Python 3.11/IDLE
+${python_version}/IDLE
 JetBrains Toolbox
 VIA
 #VMware Fusion

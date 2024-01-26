@@ -80,7 +80,7 @@ Tableau Desktop 2023.3
 zoom.us
 BBEdit
 VLC
-Microsoft Teams classic
+Microsoft Teams (work or school)
 balenaEtcher
 ${python_version}/IDLE
 JetBrains Toolbox

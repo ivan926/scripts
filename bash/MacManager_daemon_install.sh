@@ -29,7 +29,7 @@ Git
 GlobalProtectCampus
 GlobalProtectDatacenter
 GoogleChrome
-JetBrainsToolboxTest
+JetBrainsToolbox
 MicrosoftOffice365
 #MicrosoftTeams
 MozillaFirefox
@@ -73,7 +73,6 @@ Splashtop Streamer
 Splashtop Business
 NVivo
 iTerm
-GlobalProtect
 GlobalProtect
 Citrix Workspace
 Tableau Desktop 2023.1
@@ -132,33 +131,33 @@ do
     echo "$line.app"
    
 done
-
+    date=$(date)
     printf "\n\n" >> /var/log/MacManager_install.log
-    printf "initiating policy checker" >> /var/log/MacManager_install.log
+    printf "initiating policy checker ${date}\n" >> /var/log/MacManager_install.log
     #this is where we initiate the policy using the jamf trigger
     #############################################################################################################
 
 
     for trigger in "${trigger_list[@]}"
     do
+            printf "initiating policy for trigger ${trigger}\n" >> /var/log/MacManager_install.log
             trigger_result=$(/usr/local/bin/jamf policy -event $trigger -verbose | awk '{print $2 $3}' | tail -n 1)
         if [[ "$trigger_result" == "Policyerror" ]];
         then
 
             error_found=1
-            date=$(date)
-            printf "there is a policy error for app %s\n %s" $trigger $date >> /var/log/MacManager_install.log
+            
+            printf "there is a policy error for app %s %s\n" $trigger $date >> /var/log/MacManager_install.log
             POLICYERROR+="there is a policy error for app $trigger $date " 
         
            
         else
-            printf "No error for policy %s\n" $trigger 
+            printf "No error installing policy manually for policy %s\n" $trigger >> /var/log/MacManager_install.log
 
         fi
         
     done
     printf "\n\n" >> /var/log/MacManager_install.log
-    #DEBUG statment delete
     printf "Final string message to output for policy errors onto teams card = /n" >> /var/log/MacManager_install.log
     printf $LINE_ERROR >> /var/log/MacManager_install.log
     printf "\n\n" >> /var/log/MacManager_install.log
@@ -263,7 +262,7 @@ done
                    #prepend=$(date)
 
                     # echo "Path not found for ${appName}" >> /Users/${currentUser}/Documents/MACManager_files/Log_files/applications_not_found_list.txt
-                      printf "Path not found for ${appName}" >> /var/log/MacManager_install.log
+                    printf "Path not found for ${appName}\n" >> /var/log/MacManager_install.log
                     LINE_ERROR+="Path not found for ${appName}\n"
             
 
@@ -279,10 +278,10 @@ done
     #if there has been an error found use the webhook to send error message to teams card
     if [ $error_found -eq 1 ];then
         printf "\n\n" >> /var/log/MacManager_install.log
-        printf "sending info via webhook to teams channel" >> /var/log/MacManager_install.log
+        printf "sending info via webhook to teams channel\n" >> /var/log/MacManager_install.log
 
-        printf "Content of policy error = $POLICYERROR" >> /var/log/MacManager_install.log
-        printf "Content of line error = $LINE_ERROR" >> /var/log/MacManager_install.log
+        printf "Content of policy error = $POLICYERROR\n" >> /var/log/MacManager_install.log
+        printf "Content of line error = $LINE_ERROR\n" >> /var/log/MacManager_install.log
 
 
          #JSON skeleton for teams message

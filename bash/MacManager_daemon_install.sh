@@ -13,7 +13,7 @@
 
 
 #need to pull the latest version of python to ensure correct path to application
-python_version=$(ls /Applications/ | grep Python)
+python_version=$( ls /Applications/ | grep Python | sort -g | awk '{for(i=1;i<NF;i++){print $2}}')
 
 #create lists of triggers
 echo "AdobeAcrobatPro
@@ -29,7 +29,8 @@ Git
 GlobalProtectCampus
 GlobalProtectDatacenter
 GoogleChrome
-JetBrainsToolbox
+JetBrainsToolboxM1
+#Intel_version JetBrainsToolbox
 MicrosoftOffice365
 #MicrosoftTeams
 MozillaFirefox
@@ -71,12 +72,12 @@ MySQLWorkbench
 FileMaker Pro
 Splashtop Streamer
 Splashtop Business
-NVivo
+NVivo 14
 iTerm
 GlobalProtect
 Citrix Workspace
 Tableau Desktop 2023.1
-Tableau Desktop 2023.3
+Tableau Desktop 2024.1
 zoom.us
 BBEdit
 VLC
@@ -158,7 +159,7 @@ done
         
     done
     printf "\n\n" >> /var/log/MacManager_install.log
-    printf "Final string message to output for policy errors onto teams card = /n" >> /var/log/MacManager_install.log
+    printf "Final string message to output for policy errors onto teams card = \n" >> /var/log/MacManager_install.log
     printf $LINE_ERROR >> /var/log/MacManager_install.log
     printf "\n\n" >> /var/log/MacManager_install.log
 
@@ -169,7 +170,7 @@ done
     #resetting error found variable not sure if neccessary
    
 
-    printf "############################################## END OF INSTALLATION" >> /var/log/MacManager_install.log
+    printf "############################################## END OF INSTALLATION PORTION" >> /var/log/MacManager_install.log
     printf "\n\n" >> /var/log/MacManager_install.log
     #############################################################################################################
     # Detection methods below 
@@ -185,6 +186,8 @@ done
                     LINE_ERROR+="Box edit component missing, Path not found for ${appName} "
                     printf "Box edit component missing, Path not found for ${appName} " >> /var/log/MacManager_install.log
                 else
+                    
+                    error_found=1
                     echo "Box edit app found"
                     #check to see if mdls works on box components
                      var=$(mdls -name kMDItemVersion "/Users/${currentUser}/Library/Application Support/Box/Box Edit/Box Edit.app" | awk -F'"' '{for(i=0;i<NF;i++){print $i}}' | tail -n 1)
@@ -195,8 +198,10 @@ done
 
                 if [ ! -d "/Users/$currentUser/Library/Application Support/Box/Box Edit/Box Local Com Server.app"  ];then
                     LINE_ERROR+="Box edit component missing, Path not found for local Com Server.app "
+                    error_found=1
                   printf "Box edit component missing, Path not found for local Com Server.app " >> /var/log/MacManager_install.log
                 else
+
                     echo "Local Com Server app found"
                      #check to see if mdls works on box components
                      var=$(mdls -name kMDItemVersion "/Users/${currentUser}/Library/Application Support/Box/Box Edit/Box Local Com Server.app" | awk -F'"' '{for(i=0;i<NF;i++){print $i}}' | tail -n 1)
@@ -208,6 +213,19 @@ done
                 git_version=$(git version)
 
                 if [ -z "$git_version" ];then
+                    error_found=1
+                    LINE_ERROR+="Git not found on computer "
+                    printf "Git not found on computer " >> /var/log/MacManager_install.log
+                else
+                    echo "Git version control found"
+                    version_number+=$(git version)
+
+                fi
+            elif [ $appName == "${python_version}" ];then
+                git_version=$(git version)
+
+                if [ -z "$git_version" ];then
+                    error_found=1
                     LINE_ERROR+="Git not found on computer "
                     printf "Git not found on computer " >> /var/log/MacManager_install.log
                 else
@@ -240,7 +258,8 @@ done
             
                     if [ ! -d "/Applications/$ms_app" ];then
                         printf "$ms_app not found from office 365" >> /var/log/MacManager_install.log
-
+                        #Error flag
+                        error_found=1
                         #echo "Path not found for ${appName}" >> /var/log/MacManager_install.log
                         LINE_ERROR+="Office 365 app ${appName} not found in 365 suite \n"
                     else
@@ -260,7 +279,7 @@ done
 
             elif [ ! -d "/Applications/${appName}" ]; then
                    #prepend=$(date)
-
+                    error_found=1
                     # echo "Path not found for ${appName}" >> /Users/${currentUser}/Documents/MACManager_files/Log_files/applications_not_found_list.txt
                     printf "Path not found for ${appName}\n" >> /var/log/MacManager_install.log
                     LINE_ERROR+="Path not found for ${appName}\n"
@@ -277,18 +296,68 @@ done
 
     #if there has been an error found use the webhook to send error message to teams card
     if [ $error_found -eq 1 ];then
+        printf "Error has been found\n" >> /var/log/MacManager_install.log
         printf "\n\n" >> /var/log/MacManager_install.log
         printf "sending info via webhook to teams channel\n" >> /var/log/MacManager_install.log
 
         printf "Content of policy error = $POLICYERROR\n" >> /var/log/MacManager_install.log
         printf "Content of line error = $LINE_ERROR\n" >> /var/log/MacManager_install.log
+        printf "\n\nContent of JSON:\n\n${cardJsonString}" >> /var/log/MacManager_install.log
+        printf "\n\nContent of URL:\n${$teamsTestingChannelURl}\n\n" >> /var/log/MacManager_install.log
 
 
          #JSON skeleton for teams message
-        cardJsonString=$(jq --null-input \
-        --arg jq_error "$POLICYERROR" \
-        --arg line_error "$LINE_ERROR" \
-        '{
+        # cardJsonString=$(jq --null-input \
+        # --arg jq_error "$POLICYERROR" \
+        # --arg line_error "$LINE_ERROR" \
+        # '{
+        #     "type":"message",
+        #     "attachments":[
+        #         {
+        #             "contentType":"application/vnd.microsoft.card.adaptive",
+        #             "contentUrl":null,
+        #             "content":{
+        #                 "`$schema":"http://adaptivecards.io/schemas/adaptive-card.json",
+        #                 "type":"AdaptiveCard",
+        #                 "version":"1.2",
+        #                 "msTeams": { "width": "full" },
+        #                 "body": [
+        #                     {
+        #                         "type": "TextBlock",
+        #                         "text": "MACManager Report:",
+        #                         "wrap": true
+        #                     },
+        #                     {
+        #                         "type": "FactSet",
+        #                         "facts" : [
+        #                             {
+        #                                 "name": "Description",
+        #                                 "value": "**Policy Report**"
+        #                             },
+        #                             {
+        #                                 "name": "Description",
+        #                                 "value": $jq_error
+        #                             }
+        #                             ,
+        #                             {
+        #                                 "name": "Description",
+        #                                 "value": "**Path Report**"
+        #                             }
+        #                             ,
+        #                             {
+        #                                 "name": "Description",
+        #                                 "value": $line_error
+        #                             }
+        #                         ]
+        #                     }
+        #                 ]
+        #             }
+        #         }
+        #     ]
+        # }
+        # ')
+
+        cardJsonString='{
             "type":"message",
             "attachments":[
                 {
@@ -314,7 +383,7 @@ done
                                     },
                                     {
                                         "name": "Description",
-                                        "value": $jq_error
+                                        "value": ${POLICYERROR}
                                     }
                                     ,
                                     {
@@ -324,7 +393,7 @@ done
                                     ,
                                     {
                                         "name": "Description",
-                                        "value": $line_error
+                                        "value": ${LINE_ERROR}
                                     }
                                 ]
                             }
@@ -333,10 +402,15 @@ done
                 }
             ]
         }
-        ')
+        '
 
         curl -H 'Content-Type: application/json' -d "${cardJsonString}" $teamsTestingChannelURl
-
+        status=$?
+        if [ status -eq 0 ];then
+            printf "Sent http request successfully with exit code ${status}\n" >> "/var/log/MacManager_install.log"
+        else
+            printf "Error occured with exit code ${status}\n" >> "/var/log/MacManager_install.log"
+        fi
     fi
 
     #remove the files with the trigger and app list
@@ -346,7 +420,7 @@ done
 
     #alert for the user.
 
-    osascript -e 'tell application (path to frontmost application as text) to display dialog "Script has finished running" buttons {"OK"} with icon stop'
+   #osascript -e 'tell application (path to frontmost application as text) to display dialog "Script has finished running" buttons {"OK"} with icon stop'
 
     printf "############################################## END OF INSTALLATION SCRIPT" >> /var/log/MacManager_install.log
 

@@ -24,8 +24,8 @@ origin="https://www.claris.com"
 #download apple script to automate cert input to app
 path=$(curl -L https://www.claris.com/resources/documentation/ | grep -E "/resources/documentation/docs/fmp" | head -n 1 )
 #cut down parts of url that are undesirable
-path=$(echo $url | sed -E 's/^<a href="//g')
-path=$(echo $url | sed -e 's/"[^"]*//g')
+path=$(echo $path | sed -e "s/<a href=\"//g")
+path=$(echo $path | sed -e 's/"[^"]*//g')
 #concatonate
 origin+="$path"
 

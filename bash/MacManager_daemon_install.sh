@@ -128,7 +128,12 @@ done
 # reading from app list
 for line in $(cat $appList)
 do
-    app_list_Array+=("$line.app")
+    if [ $line != "Python ${python_version}" ]; then
+    
+        app_list_Array+=("$line.app")
+    else 
+         app_list_Array+=("$line")
+    fi
     echo "$line.app"
    
 done
@@ -221,17 +226,20 @@ done
                     version_number+=$(git version)
 
                 fi
-            elif [ $appName == "${python_version}" ];then
-                git_version=$(git version)
+            elif [ $appName == "Python ${python_version}" ];then
+         
 
-                if [ -z "$git_version" ];then
+                if [ ! -d "/Applications/Python ${python_version}"  ];then
+                    LINE_ERROR+="Python app missing, Path not found for Python ${python_version}"
                     error_found=1
-                    LINE_ERROR+="Git not found on computer "
-                    printf "Git not found on computer " >> /var/log/MacManager_install.log
+                  printf "Python app missing, Path not found for Python ${python_version} " >> /var/log/MacManager_install.log
                 else
-                    echo "Git version control found"
-                    version_number+=$(git version)
 
+                    echo "Python ${python_version} found"
+                     #check to see if mdls works on box components
+                    #  var=$(mdls -name kMDItemVersion "/Users/${currentUser}/Library/Application Support/Box/Box Edit/Box Local Com Server.app" | awk -F'"' '{for(i=0;i<NF;i++){print $i}}' | tail -n 1)
+                    #  version_number+=("$var")
+                    #  echo "Component of Box edit is Local Com server, version = $var"
                 fi
             elif [ $appName == "Microsoft 365.app" ];then
 
@@ -429,5 +437,5 @@ done
 
 #start the removal script
 
-/bin/bash /Users/ivan926/scripts/bash/MacManager_daemon_remove.bash
+#/bin/bash /Users/ivan926/scripts/bash/MacManager_daemon_remove.bash
   

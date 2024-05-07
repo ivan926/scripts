@@ -14,14 +14,17 @@ then
 
 else
     echo "No Adobe application found installing new Adobe"
-    cd /tmp && DMG=$(curl -L $url  | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep trials | grep dmg | sort | head -n 1)
+    cd /tmp
+    DMG=$(curl -L $url  | awk -F'"' '{for(i=1;i<NF;i++){print $i}}' | grep trials | grep dmg | sort | head -n 1)
 
     mkdir /Applications/Adobe\ Acrobat\ DC
     #mount dmg to volume folder and install package using installer command and detach DMG file
-    hdiutil attach -noBrowse $DMG && sudo installer -pkg /Volumes/Acrobat/Acrobat/Acrobat\ DC\ Installer.pkg -target /tmp && hdiutil detach /Volumes/Acrobat
+    hdiutil attach -noBrowse $DMG 
+    installer -pkg /Volumes/Acrobat/Acrobat/Acrobat\ DC\ Installer.pkg -target /tmp 
+    hdiutil detach /Volumes/Acrobat
 
-    sudo cp -R -f /Applications/Adobe\ Acrobat\ DC/Adobe\ Acrobat.app /Applications/ 
-    sudo rm -R -f /Applications/Adobe\ Acrobat\ DC
+    cp -R -f /Applications/Adobe\ Acrobat\ DC/Adobe\ Acrobat.app /Applications/ 
+    rm -R -f /Applications/Adobe\ Acrobat\ DC
 fi
 
 #getting the current version of the adobe pro app 

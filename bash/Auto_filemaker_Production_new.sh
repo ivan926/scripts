@@ -50,6 +50,9 @@ license_key_Paragraph=$(curl -L https://accounts.claris.com/software/esd/a79e19c
 
 license_key=$(echo $license_key_Paragraph | awk -F"," '{for(i=1;i<NF;i++){if( $i ~ /^\"license_keys\"/){print $i}}}'| head -n 1 | sed "s/:/\n/g" | tail -n 1 | sed "s/\[\"//g" | sed "s/\"\]//g")
 
+#Check logs to see if the license key logic still works, the license key will be outputted to the log
+printf "The key will output below:\n"
+echo $license_key >> /var/log/FileMakerPro20.txt
 
 dmg="https://accounts.claris.com/software/license/$license_key"
 logFile="/Library/Logs/filemaker.log"

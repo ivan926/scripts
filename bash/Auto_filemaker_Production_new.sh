@@ -29,12 +29,12 @@ path=$(echo $path | sed -e 's/"[^"]*//g')
 #concatonate
 origin+="$path"
 
-#move into temporary environment
-mkdir ~/Downloads/temp
-cd ~/Downloads/temp
-mkdir ~/Downloads/temp/FileMakerPro
+#move into .temporary environment
+mkdir ~/Downloads/.temp
+cd ~/Downloads/.temp
+mkdir ~/Downloads/.temp/FileMakerPro
 #move certification file installed through jamfPro into FileMakerPro setup folder
-mv ~/Downloads/LicenseCert.fmcert ~/Downloads/temp/FileMakerPro/
+#mv ~/Downloads/LicenseCert.fmcert ~/Downloads/.temp/FileMakerPro/
 
 #download apple script and unzip the file
 curl -L -O $origin
@@ -45,15 +45,18 @@ chmod +x ./AppleRemoteDesktopDeployment.sh
 sed -i '' "s/AI_SKIPDIALOG=0/AI_SKIPDIALOG=1/g" "Assisted Install.txt"
 sed -i '' "s/AI_LICENSE_ACCEPTED=0/AI_LICENSE_ACCEPTED=1/g" "Assisted Install.txt"
 
+#obtain correct key from claris website for the url path to the DMG
+license_key_Paragraph=$(curl -L https://accounts.claris.com/software/esd/a79e19c30f6aa5b777a9c58b88d59319 | grep -e "Claris FileMaker Server")
+
+license_key=$(echo $license_key_Paragraph | awk -F"," '{for(i=1;i<NF;i++){if( $i ~ /^\"license_keys\"/){print $i}}}'| head -n 1 | sed "s/:/\n/g" | tail -n 1 | sed "s/\[\"//g" | sed "s/\"\]//g")
 
 
-
-dmg="https://accounts.claris.com/software/license/37737-V7JTV-V369T-4N8JJ-JM42K-885N6-TX4NN"
+dmg="https://accounts.claris.com/software/license/$license_key"
 logFile="/Library/Logs/filemaker.log"
 
 
 ####################################################################################
-echo "Attempting to close Filemaker app if opened" >> $logFile
+echo "At.tempting to close Filemaker app if opened" >> $logFile
 
 if [ -a "Filemaker Pro.app" ]; then
 
@@ -89,10 +92,10 @@ echo "/Volumes/$fileMaker/FileMaker\ Pro.app /Applications/"
 
 FileMaker_mount_name=$(ls /Volumes | grep FileMaker | head -n 1)
 #copying all contents of opened dmg file to setup filemaker folder
-cp -R "/Volumes/$FileMaker_mount_name/" ~/Downloads/temp/FileMakerPro/
+cp -R "/Volumes/$FileMaker_mount_name/" ~/Downloads/.temp/FileMakerPro/
 
 #create deployment package with license included
-cd ~/Downloads/temp
+cd ~/Downloads/.temp
 ./AppleRemoteDesktopDeployment.sh FileMakerPro
 #detach original dmg file mounted
 hdiutil detach "/Volumes/$FileMaker_mount_name"
@@ -100,8 +103,8 @@ hdiutil detach "/Volumes/$FileMaker_mount_name"
 #install package in newly built package 
 installer -pkg FileMakerPro/FileMaker\ Pro\ ARD.pkg -target /
 
-#clean up remove temp folder
-#rm -R ~/Download/temp
+#clean up remove .temp folder
+rm -Rf ~/Download/.temp
 
 # chmod -R 755 /Applications/FileMaker\ Pro.app
 # chown -R root:wheel /Applications/FileMaker\ Pro.app
